@@ -111,18 +111,18 @@
     async function fetchEmotions() {
       const snapshot = await db.collection('emotions')
         .where('client_id', '==', clientId)
-        .orderBy('timestamp', 'desc')
+        .orderBy('date', 'desc')
         .get();
 
       allEntries = snapshot.docs.map(doc => doc.data());
       renderEmotions(allEntries);
     }
 
-    function filterByEmotion(emotionType) {
-      if (emotionType === 'all') {
+    function filterByEmotion(emotionId) {
+      if (emotionId === 'all') {
         renderEmotions(allEntries);
       } else {
-        const filtered = allEntries.filter(entry => entry.emotion_type === emotionType);
+        const filtered = allEntries.filter(entry => entry.emotion_id === emotionId);
         renderEmotions(filtered);
       }
     }
@@ -141,27 +141,13 @@
         div.className = 'entry';
 
         div.innerHTML = `
-          <div class="emotion">${getEmotionIcon(entry.emotion_type)} ${entry.emotion_type}</div>
-          <div class="text">${entry.text}</div>
-          <div class="timestamp">${new Date(entry.timestamp).toLocaleString()}</div>
+          <div class="emotion">${entry.emotion_type}</div>
+          <div class="text">${entry.emotion_context || ''}</div>
+          <div class="timestamp">${new Date(entry.date).toLocaleString()}</div>
         `;
 
         container.appendChild(div);
       });
-    }
-
-    function getEmotionIcon(emotionType) {
-      const icons = {
-        joy: '😊',
-        sad: '😢',
-        anger: '😠',
-        fear: '😨',
-        surprise: '😮',
-        disgust: '🤢',
-        interest: '🧐',
-        trust: '🤗'          
-      };
-      return icons[emotionType] || '📝';
     }
 
     fetchEmotions();

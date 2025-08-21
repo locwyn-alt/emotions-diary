@@ -1,11 +1,85 @@
-const urlParams = new URLSearchParams(window.location.search);
-const clientId = urlParams.get("client_id");
-const emotionId = urlParams.get("emotion_id") || "all";
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дневник эмоций</title>
+  <style>
+    body { font-family: 'Segoe UI', sans-serif; background: #fdf6f0; padding: 15px; }
+    .filter-buttons { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-bottom: 20px; }
+    .filter-buttons button { padding: 8px 12px; border: none; border-radius: 8px; background: #e0d7f7; cursor: pointer; white-space: nowrap; }
+    .filter-buttons button.active { background: #9c27b0; color: white; }
+    .entry { background: white; border-radius: 10px; padding: 15px; margin-bottom: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05); }
+    .entry h3 { margin: 0 0 10px; color: #6a1b9a; }
+    .entry p { margin: 5px 0; font-size: 14px; }
+  </style>
+</head>
+<body>
 
-const apiUrl = `https://script.google.com/macros/s/YOUR_SCRIPT_ID/exec?action=get_json&client_id=${clientId}&emotion_id=${emotionId}`;
+  <div class="filter-buttons" id="filters"></div>
+  <div id="entries">Загрузка...</div>
 
-fetch(apiUrl)
-  .then(res => res.json())
-  .then(data => {
-    // отрисовка записей
-  });
+  <script>
+    const EMOTIONS = [
+      { id: "all", text: "Все эмоции" },
+      { id: "joy", text: "😊 Радость / восторг" },
+      { id: "sadness", text: "😢 Грусть / печаль" },
+      { id: "anger", text: "😠 Злость / досада" },
+      { id: "fear", text: "😨 Страх / тревога" },
+      { id: "surprise", text: "😮 Удивление / возбуждение" },
+      { id: "disgust", text: "🤢 Брезгливость / скука" },
+      { id: "interest", text: "🧐 Ожидание / интерес" },
+      { id: "trust", text: "🤗 Доверие / принятие" }
+    ];
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const clientId = urlParams.get("client_id");
+    let currentEmotion = "all";
+
+    const filters = document.getElementById("filters");
+    EMOTIONS.forEach(em => {
+      const btn = document.createElement("button");
+      btn.textContent = em.text;
+      btn.dataset.id = em.id;
+      if (em.id === "all") btn.classList.add("active");
+      btn.onclick = () => {
+        document.querySelectorAll("button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        currentEmotion = em.id;
+        loadEntries();
+      };
+      filters.appendChild(btn);
+    });
+
+    function loadEntries() {
+      const apiUrl = `https://script.google.com/macros/s/AKfycbxng3-CbqTgqnC8euxI-H5FMTp8Rvj32ThnKvI04OOGrv5eGjPJbbkrXOF4Cv8wcjtrtQ/exec?action=get_json&client_id=${clientId}&emotion_id=${currentEmotion}`;
+      fetch(apiUrl)
+        .then(res => res.json())
+        .then(data => {
+          const container = document.getElementById("entries");
+          container.innerHTML = "";
+          if (!data.entries.length) {
+            container.innerHTML = "<p>Записей нет 🙈</p>";
+            return;
+          }
+          data.entries.forEach(entry => {
+            const el = document.createElement("div");
+            el.className = "entry";
+            el.innerHTML = `
+              <h3>${entry.emotion_type}</h3>
+              <p><b>Интенсивность:</b> ${entry.emotion_intens}/10</p>
+              <p><b>Ситуация:</b> ${entry.emotion_context}</p>
+              <p><b>Реакция:</b> ${entry.emotion_reflex}</p>
+              <p><b>Мысли:</b> ${entry.emotion_think}</p>
+              <p><em>${entry.date}</em></p>
+            `;
+            container.appendChild(el);
+          });
+        });
+    }
+
+    loadEntries();
+  </script>
+
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Дневник эмоций</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f9f9;
+      margin: 0;
+      padding: 20px;
+    }
+    .filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-bottom: 20px;
+    }
+    .filter-buttons button {
+      flex: 1 1 calc(20% - 10px);
+      min-width: 100px;
+      padding: 10px;
+      font-size: 14px;
+      white-space: nowrap;
+      border: none;
+      border-radius: 8px;
+      background-color: #e0e0e0;
+      cursor: pointer;
+    }
+    .filter-buttons button.active {
+      background-color: #a3d5ff;
+    }
+    .entry {
+      background-color: #ffffff;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+    .entry h3 {
+      margin: 0 0 10px;
+      font-size: 16px;
+    }
+    .entry p {
+      margin: 5px 0;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="filter-buttons" id="filters">
+    <button data-filter="all" class="active">Все эмоции</button>
+    <button data-filter="joy">😊 Радость / восторг</button>
+    <button data-filter="sadness">😢 Грусть / печаль</button>
+    <button data-filter="anger">😠 Злость / досада</button>
+    <button data-filter="fear">😨 Страх / тревога</button>
+    <button data-filter="surprise">😮 Удивление / возбуждение</button>
+    <button data-filter="disgust">🤢 Брезгливость / скука</button>
+    <button data-filter="interest">🧐 Ожидание / интерес</button>
+    <button data-filter="trust">🤗 Доверие / принятие</button>
+  </div>
+
+  <div id="entries"></div>
+
+  <script>
+    const apiUrl = "https://script.google.com/macros/s/AKfycbxng3-CbqTgqnC8euxI-H5FMTp8Rvj32ThnKvI04OOGrv5eGjPJbbkrXOF4Cv8wcjtrtQ/exec?action=get_emotions";
+
+    let allEntries = [];
+
+    fetch(apiUrl)
+      .then(res => res.json())
+      .then(data => {
+        allEntries = data.entries || [];
+        renderEntries("all");
+      });
+
+    function renderEntries(filter) {
+      const container = document.getElementById("entries");
+      container.innerHTML = "";
+
+      const filtered = filter === "all" ? allEntries : allEntries.filter(e => e.emotion_id === filter);
+
+      filtered.forEach(entry => {
+        const el = document.createElement("div");
+        el.className = "entry";
+        el.innerHTML = `
+          <h3>${getEmoji(entry.emotion_id)} ${entry.emotion_type}</h3>
+          <p><strong>Уровень:</strong> ${entry.emotion_intens}</p>
+          <p><strong>Ситуация:</strong> ${entry.emotion_context}</p>
+          <p><strong>Реакция:</strong> ${entry.emotion_reflex}</p>
+          <p><strong>Мысли:</strong> ${entry.emotion_think}</p>
+          <p><em>${entry.date}</em></p>
+        `;
+        container.appendChild(el);
+      });
+    }
+
+    function getEmoji(id) {
+      const map = {
+        joy: "😊", sadness: "😢", anger: "😠", fear: "😨",
+        surprise: "😮", disgust: "🤢", interest: "🧐", trust: "🤗"
+      };
+      return map[id] || "🟊";
+    }
+
+    document.querySelectorAll(".filter-buttons button").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-buttons button").forEach(b => b.classList.remove("active"));
+        btn.classList.add("active");
+        renderEntries(btn.dataset.filter);
+      });
+    });
+  </script>
+
+</body>
+</html>

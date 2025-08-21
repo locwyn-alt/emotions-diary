@@ -105,12 +105,12 @@
 
     function getClientIdFromURL() {
       const params = new URLSearchParams(window.location.search);
-      return params.get('clientId') || 'defaultClient';
+      return params.get('client_id') || 'defaultClient';
     }
 
     async function fetchEmotions() {
       const snapshot = await db.collection('emotions')
-        .where('clientId', '==', clientId)
+        .where('client_id', '==', clientId)
         .orderBy('timestamp', 'desc')
         .get();
 

@@ -122,7 +122,7 @@
       if (emotionType === 'all') {
         renderEmotions(allEntries);
       } else {
-        const filtered = allEntries.filter(entry => entry.emotion === emotionType);
+        const filtered = allEntries.filter(entry => entry.emotion_type === emotionType);
         renderEmotions(filtered);
       }
     }
@@ -141,7 +141,7 @@
         div.className = 'entry';
 
         div.innerHTML = `
-          <div class="emotion">${getEmotionIcon(entry.emotion)} ${entry.emotion}</div>
+          <div class="emotion">${getEmotionIcon(entry.emotion_type)} ${entry.emotion_type}</div>
           <div class="text">${entry.text}</div>
           <div class="timestamp">${new Date(entry.timestamp).toLocaleString()}</div>
         `;
@@ -150,7 +150,7 @@
       });
     }
 
-    function getEmotionIcon(emotion) {
+    function getEmotionIcon(emotionType) {
       const icons = {
         joy: '😊',
         sad: '😢',
@@ -161,7 +161,7 @@
         interest: '🧐',
         trust: '🤗'          
       };
-      return icons[emotion] || '📝';
+      return icons[emotionType] || '📝';
     }
 
     fetchEmotions();

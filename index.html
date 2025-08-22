@@ -72,7 +72,7 @@ const clientId = new URLSearchParams(window.location.search).get('client_id') ||
 
 const EMOTIONS = [
   { id: "joy", text: "😊 Радость / восторг" },
-  { id: "sadness", text: "😢 Грусть / печаль" },
+  { id: "sad", text: "😢 Грусть / печаль" },
   { id: "anger", text: "😠 Злость / досада" },
   { id: "fear", text: "😨 Страх / тревога" },
   { id: "surprise", text: "😮 Удивление / возбуждение" },
@@ -86,11 +86,7 @@ let allEntries = [];
 async function fetchEmotions() {
   try {
     const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
-    let data = await response.json();
-    
-    // Убираем дубликаты по date + emotion_id
-    data = Array.from(new Map(data.map(item => [item.date + item.emotion_id, item])).values());
-
+    const data = await response.json(); // Берем JSON напрямую
     allEntries = data;
     renderFilters();
     renderEmotions(allEntries);
@@ -104,15 +100,15 @@ function renderFilters() {
   const container = document.getElementById('emotion-filters');
   container.innerHTML = "";
 
+  // Считаем, есть ли записи по каждой эмоции
   const counts = {};
   EMOTIONS.forEach(em => counts[em.id] = allEntries.filter(e => e.emotion_id === em.id).length);
 
   // Кнопка "Все эмоции"
-  const allActive = allEntries.length > 0;
   const btnAll = document.createElement('button');
   btnAll.textContent = "Все эмоции";
-  btnAll.className = allActive ? "active" : "inactive";
-  if (allActive) btnAll.onclick = () => renderEmotions(allEntries);
+  btnAll.className = allEntries.length > 0 ? "active" : "inactive";
+  if (allEntries.length > 0) btnAll.onclick = () => renderEmotions(allEntries);
   container.appendChild(btnAll);
 
   EMOTIONS.forEach(em => {
@@ -142,15 +138,16 @@ function renderEmotions(entries) {
     div.innerHTML = `
       <h4>${e.emotion_type}</h4>
       <p><b>Интенсивность:</b> ${e.emotion_intens}/10</p>
-      <p><b>Ситуация:</b> ${e.emotion_context}</p>
-      <p><b>Реакция:</b> ${e.emotion_reflex}</p>
-      <p><b>Мысли:</b> ${e.emotion_think}</p>
+      <p><b>Ситуация:</b> ${e.emotion_context || ''}</p>
+      <p><b>Реакция:</b> ${e.emotion_reflex || ''}</p>
+      <p><b>Мысли:</b> ${e.emotion_think || ''}</p>
       <p style="font-size:12px; color:#999;">${new Date(e.date).toLocaleString()}</p>
     `;
     container.appendChild(div);
   });
 }
 
+// Загружаем данные сразу после открытия страницы
 fetchEmotions();
 </script>
 

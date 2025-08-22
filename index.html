@@ -67,12 +67,12 @@
 <div id="emotion-list"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec"; // Вставь свой Apps Script URL
+const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec"; // Твой Apps Script URL
 const clientId = new URLSearchParams(window.location.search).get('client_id') || 'defaultClient';
 
 const EMOTIONS = [
   { id: "joy", text: "😊 Радость / восторг" },
-  { id: "sadness", text: "😢 Грусть / печаль" },
+  { id: "sad", text: "😢 Грусть / печаль" },
   { id: "anger", text: "😠 Злость / досада" },
   { id: "fear", text: "😨 Страх / тревога" },
   { id: "surprise", text: "😮 Удивление / возбуждение" },
@@ -83,10 +83,11 @@ const EMOTIONS = [
 
 let allEntries = [];
 
+// ===== Получение данных =====
 async function fetchEmotions() {
   try {
     const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
-    const data = await response.json(); // Берем JSON напрямую
+    const data = await response.json();
     allEntries = data;
     renderFilters();
     renderEmotions(allEntries);
@@ -96,6 +97,7 @@ async function fetchEmotions() {
   }
 }
 
+// ===== Фильтры кнопок =====
 function renderFilters() {
   const container = document.getElementById('emotion-filters');
   container.innerHTML = "";
@@ -111,6 +113,7 @@ function renderFilters() {
   if (allEntries.length > 0) btnAll.onclick = () => renderEmotions(allEntries);
   container.appendChild(btnAll);
 
+  // Кнопки по эмоциям
   EMOTIONS.forEach(em => {
     const btn = document.createElement('button');
     btn.textContent = em.text;
@@ -124,6 +127,7 @@ function renderFilters() {
   });
 }
 
+// ===== Рендер записей =====
 function renderEmotions(entries) {
   const container = document.getElementById('emotion-list');
   container.innerHTML = "";
@@ -147,7 +151,7 @@ function renderEmotions(entries) {
   });
 }
 
-// Загружаем данные сразу после открытия страницы
+// ===== Загрузка страницы =====
 fetchEmotions();
 </script>
 

@@ -314,9 +314,16 @@
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
     applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
-    document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
-
-    fetchEmotions();
+    document.addEventListener("DOMContentLoaded", () => {
+      document.getElementById('theme-toggle').addEventListener('click', toggleTheme);
+      fetchEmotions();
+    });
   </script>
 </body>
 </html>
+
+
+
+
+
+

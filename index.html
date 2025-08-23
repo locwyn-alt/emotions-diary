@@ -251,57 +251,58 @@
       }
     }
 
-    function renderFilters() {
- const container = document.getElementById('emotion-filters');
-container.innerHTML = "";
+function renderFilters() {
+  const container = document.getElementById('emotion-filters');
+  container.innerHTML = "";
 
-const btnAll = document.createElement('button');
-btnAll.textContent = "Все эмоции";
-btnAll.className = "all-emotions";
-btnAll.onclick = () => renderEmotions(allEntries);
-container.appendChild(btnAll);
+  const btnAll = document.createElement('button');
+  btnAll.textContent = "Все эмоции";
+  btnAll.className = "all-emotions";
+  btnAll.onclick = () => renderEmotions(allEntries);
+  container.appendChild(btnAll);
 
-// Разделим эмоции на два ряда по 4
-const firstRow = EMOTIONS.slice(0, 4);
-const secondRow = EMOTIONS.slice(4, 8);
+  const firstRow = EMOTIONS.slice(0, 4);
+  const secondRow = EMOTIONS.slice(4, 8);
 
-[firstRow, secondRow].forEach(row => {
-  row.forEach(em => {
-    const btn = document.createElement('button');
-    btn.textContent = em.text;
-    btn.onclick = () => {
-      const filtered = allEntries.filter(e =>
-        normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-      );
-      renderEmotions(filtered);
-    };
-    container.appendChild(btn);
+  [firstRow, secondRow].forEach(row => {
+    row.forEach(em => {
+      const btn = document.createElement('button');
+      btn.textContent = em.text;
+      btn.onclick = () => {
+        const filtered = allEntries.filter(e =>
+          normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+        );
+        renderEmotions(filtered);
+      };
+      container.appendChild(btn);
+    });
   });
-});
+}
 
+// ⬇️ Вынеси renderEmotions сюда, отдельно
+function renderEmotions(entries) {
+  const container = document.getElementById('emotion-list');
+  container.innerHTML = "";
+  if (entries.length === 0) {
+    container.innerHTML = "<p style='text-align:center;'>Нет записей для выбранной эмоции.</p>";
+    return;
+  }
 
-    function renderEmotions(entries) {
-      const container = document.getElementById('emotion-list');
-      container.innerHTML = "";
-      if (entries.length === 0) {
-        container.innerHTML = "<p style='text-align:center;'>Нет записей для выбранной эмоции.</p>";
-        return;
-      }
+  entries.forEach(e => {
+    const div = document.createElement('div');
+    div.className = "entry";
+    div.innerHTML = `
+      <h4>${e.emotion_type}</h4>
+      <p><b>Интенсивность:</b> ${e.emotion_intens}/10</p>
+      <p><b>Ситуация:</b> ${e.emotion_context}</p>
+      <p><b>Реакция:</b> ${e.emotion_reflex}</p>
+      <p><b>Мысли:</b> ${e.emotion_think}</p>
+      <p style="font-size:12px; color:#999;">${new Date(e.date).toLocaleString()}</p>
+    `;
+    container.appendChild(div);
+  });
+}
 
-      entries.forEach(e => {
-        const div = document.createElement('div');
-        div.className = "entry";
-        div.innerHTML = `
-          <h4>${e.emotion_type}</h4>
-          <p><b>Интенсивность:</b> ${e.emotion_intens}/10</p>
-          <p><b>Ситуация:</b> ${e.emotion_context}</p>
-          <p><b>Реакция:</b> ${e.emotion_reflex}</p>
-          <p><b>Мысли:</b> ${e.emotion_think}</p>
-          <p style="font-size:12px; color:#999;">${new Date(e.date).toLocaleString()}</p>
-        `;
-        container.appendChild(div);
-      });
-    }
 
     function applyTheme(theme) {
       document.body.classList.toggle('dark', theme === 'dark');

@@ -18,30 +18,45 @@
     margin-bottom: 16px;
     color: #5a5a5a;
   }
+
+  /* 🔧 Обновлённая сетка кнопок */
   #emotion-filters {
-    display: flex;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
     gap: 8px;
     justify-content: center;
     margin-bottom: 20px;
+    max-width: 600px;
+    margin-left: auto;
+    margin-right: auto;
   }
+
   #emotion-filters button {
-    padding: 8px 12px;
+    padding: 10px 12px;
     border-radius: 20px;
     border: none;
     cursor: pointer;
     font-size: 14px;
+    white-space: nowrap;
     transition: all 0.2s ease;
   }
+
   #emotion-filters button.active {
     background-color: #6a1b9a;
     color: white;
   }
+
   #emotion-filters button.inactive {
     background-color: #ccc;
     color: #888;
     cursor: default;
   }
+
+  /* 🧩 Широкая кнопка "Все эмоции" */
+  #emotion-filters button.all-emotions {
+    grid-column: span 4;
+  }
+
   #emotion-list .entry {
     background-color: #fff;
     border-radius: 12px;
@@ -84,7 +99,6 @@ const EMOTIONS = [
   { id: "trust", text: "🤗 Доверие / принятие" }
 ];
 
-// 🌈 Словарь для нормализации
 const emotionMap = {
   "😢 Грусть / печаль": "sadness",
   "😠 Злость / раздражение": "anger",
@@ -123,7 +137,6 @@ function renderFilters() {
   const container = document.getElementById('emotion-filters');
   container.innerHTML = "";
 
-  // Подсчёт записей по нормализованному emotion_id
   const counts = {};
   EMOTIONS.forEach(em => {
     counts[em.id] = allEntries.filter(e =>
@@ -131,15 +144,13 @@ function renderFilters() {
     ).length;
   });
 
-  // Кнопка "Все эмоции"
   const allActive = allEntries.length > 0;
   const btnAll = document.createElement('button');
   btnAll.textContent = "Все эмоции";
-  btnAll.className = allActive ? "active" : "inactive";
+  btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
   if (allActive) btnAll.onclick = () => renderEmotions(allEntries);
   container.appendChild(btnAll);
 
-  // Кнопки по эмоциям
   EMOTIONS.forEach(em => {
     const btn = document.createElement('button');
     btn.textContent = em.text;
@@ -185,7 +196,6 @@ function renderEmotions(entries) {
 
 fetchEmotions();
 </script>
-
 
 </body>
 </html>

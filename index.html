@@ -1,25 +1,67 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>🌿 Дневник эмоций</title>
   <style>
+    :root {
+      --bg-color: #f9f7f6;
+      --text-color: #333;
+      --card-bg: #fff;
+      --accent-color: #6a1b9a;
+      --button-bg: #6a1b9a;
+      --button-text: #fff;
+    }
+
+    body.dark {
+      --bg-color: #1e1e1e;
+      --text-color: #eee;
+      --card-bg: #2c2c2c;
+      --accent-color: #bb86fc;
+      --button-bg: #bb86fc;
+      --button-text: #000;
+    }
+
     body {
       font-family: 'Segoe UI', sans-serif;
-      background-color: #f9f7f6;
-      color: #333;
+      background-color: var(--bg-color);
+      color: var(--text-color);
       padding: 20px;
       max-width: 800px;
       margin: auto;
+      transition: background-color 0.4s ease, color 0.4s ease;
     }
+
     h2 {
       text-align: center;
       margin-bottom: 16px;
-      color: #5a5a5a;
+      color: var(--text-color);
     }
 
-    /* 🎨 Сетка кнопок */
+    #theme-toggle {
+      display: block;
+      margin: 0 auto 20px auto;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      cursor: pointer;
+      font-size: 20px;
+      transition: background-color 0.3s ease, transform 0.2s ease;
+    }
+
+    #theme-toggle.clicked {
+      animation: pulse 0.4s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.2); }
+      100% { transform: scale(1); }
+    }
+
     #emotion-filters {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -37,13 +79,14 @@
       border: none;
       cursor: pointer;
       font-size: 14px;
-      white-space: nowrap;
+      white-space: normal;
+      word-break: break-word;
       transition: all 0.2s ease;
       min-width: 0;
     }
 
     #emotion-filters button.active {
-      background-color: #6a1b9a;
+      background-color: var(--accent-color);
       color: white;
     }
 
@@ -57,7 +100,6 @@
       grid-column: span 4;
     }
 
-    /* 📱 Адаптация для мобильных */
     @media (max-width: 480px) {
       #emotion-filters {
         grid-template-columns: repeat(2, 1fr);
@@ -69,26 +111,29 @@
     }
 
     #emotion-list .entry {
-      background-color: #fff;
+      background-color: var(--card-bg);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: background-color 0.4s ease;
     }
+
     #emotion-list .entry h4 {
       margin: 0 0 6px 0;
-      color: #6a1b9a;
+      color: var(--accent-color);
     }
+
     #emotion-list .entry p {
       margin: 2px 0;
-      color: #555;
+      color: var(--text-color);
     }
   </style>
 </head>
 <body>
 
 <h2>🌿 Ваши эмоции</h2>
-
+<button id="theme-toggle">🌙</button>
 <div id="emotion-filters"></div>
 <div id="emotion-list"></div>
 
@@ -193,17 +238,4 @@ function renderEmotions(entries) {
     div.innerHTML = `
       <h4>${e.emotion_type}</h4>
       <p><b>Интенсивность:</b> ${e.emotion_intens}/10</p>
-      <p><b>Ситуация:</b> ${e.emotion_context}</p>
-      <p><b>Реакция:</b> ${e.emotion_reflex}</p>
-      <p><b>Мысли:</b> ${e.emotion_think}</p>
-      <p style="font-size:12px; color:#999;">${new Date(e.date).toLocaleString()}</p>
-    `;
-    container.appendChild(div);
-  });
-}
-
-fetchEmotions();
-</script>
-
-</body>
-</html>
+      <p><b>Ситуация:</b> ${

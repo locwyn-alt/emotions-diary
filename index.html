@@ -64,42 +64,45 @@
 
     /* 🎯 Три ряда кнопок */
     #emotion-filters {
-      display: flex;
-      flex-direction: column;
-      gap: 16px;
-      margin: 20px auto;
-      max-width: 800px;
-      align-items: center;
-    }
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 12px;
+  margin: 20px auto;
+  max-width: 800px;
+}
 
-    .emotion-row {
-      display: flex;
-      gap: 12px;
-      justify-content: center;
-    }
+#emotion-filters button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 15px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  transition: background-color 0.3s ease;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  max-width: 100%;
+}
 
-    .emotion-row button {
-      padding: 10px 16px;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 15px;
-      background-color: var(--button-bg);
-      color: var(--button-text);
-      transition: background-color 0.3s ease;
-      white-space: nowrap;
-    }
+#emotion-filters button:hover {
+  background-color: #8e24aa;
+}
 
-    .emotion-row button.inactive {
-      background-color: #ccc;
-      color: #666;
-      cursor: default;
-    }
+#emotion-filters button.inactive {
+  background-color: #ccc;
+  color: #666;
+  cursor: default;
+}
 
-    .emotion-row button.all-emotions {
-      background-color: #2196f3;
-      color: white;
-    }
+#emotion-filters button.all-emotions {
+  background-color: #2196f3;
+  color: white;
+  flex-basis: 100%;
+  text-align: center;
+}
 
     #emotion-list .entry {
       background-color: var(--card-bg);
@@ -224,66 +227,39 @@
     }
 
     function renderFilters() {
-      const container = document.getElementById('emotion-filters');
-      container.innerHTML = "";
+  const container = document.getElementById('emotion-filters');
+  container.innerHTML = "";
 
-      const counts = {};
-      EMOTIONS.forEach(em => {
-        counts[em.id] = allEntries.filter(e =>
+  const counts = {};
+  EMOTIONS.forEach(em => {
+    counts[em.id] = allEntries.filter(e =>
+      normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+    ).length;
+  });
+
+  const btnAll = document.createElement('button');
+  btnAll.textContent = "Все эмоции";
+  btnAll.className = allEntries.length > 0 ? "active all-emotions" : "inactive all-emotions";
+  if (allEntries.length > 0) btnAll.onclick = () => renderEmotions(allEntries);
+  container.appendChild(btnAll);
+
+  EMOTIONS.forEach(em => {
+    const btn = document.createElement('button');
+    btn.textContent = em.text;
+    const count = counts[em.id];
+    btn.className = count > 0 ? "active" : "inactive";
+    if (count > 0) {
+      btn.onclick = () => {
+        const filtered = allEntries.filter(e =>
           normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-        ).length;
-      });
-
-      // Ряд 1 — Все эмоции
-      const row1 = document.createElement('div');
-      row1.className = "emotion-row";
-      const btnAll = document.createElement('button');
-      btnAll.textContent = "Все эмоции";
-      btnAll.className = allEntries.length > 0 ? "active all-emotions" : "inactive all-emotions";
-      if (allEntries.length > 0) btnAll.onclick = () => renderEmotions(allEntries);
-      row1.appendChild(btnAll);
-      container.appendChild(row1);
-
-      // Ряд 2 — первые 4 эмоции
-      const row2 = document.createElement('div');
-      row2.className = "emotion-row";
-      EMOTIONS.slice(0, 4).forEach(em => {
-        const btn = document.createElement('button');
-        btn.textContent = em.text;
-        const count = counts[em.id];
-        btn.className = count > 0 ? "active" : "inactive";
-        if (count > 0) {
-          btn.onclick = () => {
-            const filtered = allEntries.filter(e =>
-              normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-            );
-            renderEmotions(filtered);
-          };
-        }
-        row2.appendChild(btn);
-      });
-      container.appendChild(row2);
-
-      // Ряд 3 — оставшиеся 4 эмоции
-      const row3 = document.createElement('div');
-      row3.className = "emotion-row";
-      EMOTIONS.slice(4).forEach(em => {
-        const btn = document.createElement('button');
-        btn.textContent = em.text;
-        const count = counts[em.id];
-        btn.className = count > 0 ? "active" : "inactive";
-        if (count > 0) {
-          btn.onclick = () => {
-            const filtered = allEntries.filter(e =>
-              normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-            );
-            renderEmotions(filtered);
-          };
-        }
-        row3.appendChild(btn);
-      });
-      container.appendChild(row3);
+        );
+        renderEmotions(filtered);
+      };
     }
+    container.appendChild(btn);
+  });
+}
+
 
     function renderEmotions(entries) {
       const container = document.getElementById('emotion-list');

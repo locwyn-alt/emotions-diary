@@ -63,16 +63,19 @@
 
 <h2>🌿 Ваши эмоции</h2>
 
-<div id="emotion-filters"></div>
+<div id="emotion-filters">
+  <!-- Кнопки будут динамически вставляться -->
+</div>
+
 <div id="emotion-list"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec"; // Твой Apps Script URL
+const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec"; // Вставь свой Apps Script URL
 const clientId = new URLSearchParams(window.location.search).get('client_id') || 'defaultClient';
 
 const EMOTIONS = [
   { id: "joy", text: "😊 Радость / восторг" },
-  { id: "sad", text: "😢 Грусть / печаль" },
+  { id: "sadness", text: "😢 Грусть / печаль" },
   { id: "anger", text: "😠 Злость / досада" },
   { id: "fear", text: "😨 Страх / тревога" },
   { id: "surprise", text: "😮 Удивление / возбуждение" },
@@ -83,11 +86,10 @@ const EMOTIONS = [
 
 let allEntries = [];
 
-// ===== Получение данных =====
 async function fetchEmotions() {
   try {
     const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
-    const data = await response.json();
+    const data = await response.json ? await response.json() : await response.text().then(JSON.parse);
     allEntries = data;
     renderFilters();
     renderEmotions(allEntries);
@@ -97,7 +99,6 @@ async function fetchEmotions() {
   }
 }
 
-// ===== Фильтры кнопок =====
 function renderFilters() {
   const container = document.getElementById('emotion-filters');
   container.innerHTML = "";
@@ -107,19 +108,22 @@ function renderFilters() {
   EMOTIONS.forEach(em => counts[em.id] = allEntries.filter(e => e.emotion_id === em.id).length);
 
   // Кнопка "Все эмоции"
+  const allActive = allEntries.length > 0;
   const btnAll = document.createElement('button');
   btnAll.textContent = "Все эмоции";
-  btnAll.className = allEntries.length > 0 ? "active" : "inactive";
-  if (allEntries.length > 0) btnAll.onclick = () => renderEmotions(allEntries);
+  btnAll.className = allActive ? "active" : "inactive";
+  if (allActive) btnAll.onclick = () => renderEmotions(allEntries);
   container.appendChild(btnAll);
 
-  // Кнопки по эмоциям
   EMOTIONS.forEach(em => {
     const btn = document.createElement('button');
     btn.textContent = em.text;
     if (counts[em.id] > 0) {
       btn.className = "active";
-      btn.onclick = () => renderEmotions(allEntries.filter(e => e.emotion_id === em.id));
+      btn.onclick = () => {
+        const filtered = allEntries.filter(e => e.emotion_id === em.id);
+        renderEmotions(filtered);
+      };
     } else {
       btn.className = "inactive";
     }
@@ -127,7 +131,6 @@ function renderFilters() {
   });
 }
 
-// ===== Рендер записей =====
 function renderEmotions(entries) {
   const container = document.getElementById('emotion-list');
   container.innerHTML = "";
@@ -142,16 +145,15 @@ function renderEmotions(entries) {
     div.innerHTML = `
       <h4>${e.emotion_type}</h4>
       <p><b>Интенсивность:</b> ${e.emotion_intens}/10</p>
-      <p><b>Ситуация:</b> ${e.emotion_context || ''}</p>
-      <p><b>Реакция:</b> ${e.emotion_reflex || ''}</p>
-      <p><b>Мысли:</b> ${e.emotion_think || ''}</p>
+      <p><b>Ситуация:</b> ${e.emotion_context}</p>
+      <p><b>Реакция:</b> ${e.emotion_reflex}</p>
+      <p><b>Мысли:</b> ${e.emotion_think}</p>
       <p style="font-size:12px; color:#999;">${new Date(e.date).toLocaleString()}</p>
     `;
     container.appendChild(div);
   });
 }
 
-// ===== Загрузка страницы =====
 fetchEmotions();
 </script>
 

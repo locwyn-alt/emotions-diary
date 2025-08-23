@@ -8,11 +8,14 @@
     body {
       font-family: sans-serif;
       margin: 20px;
+      transition: background 0.3s, color 0.3s;
     }
     #theme-toggle {
       position: fixed;
       top: 20px;
       right: 20px;
+      padding: 8px 12px;
+      cursor: pointer;
     }
     #emotion-filters button {
       margin: 5px;
@@ -22,11 +25,29 @@
     #entries {
       margin-top: 20px;
     }
-    #loading {
-      text-align: center;
-      font-size: 16px;
-      margin: 20px;
-      color: #666;
+    .skeleton {
+      background: #eee;
+      border-radius: 4px;
+      color: transparent;
+      pointer-events: none;
+    }
+    .skeleton-button {
+      width: 40px;
+      height: 30px;
+      margin: 5px;
+      display: inline-block;
+    }
+    .skeleton-entry {
+      height: 20px;
+      margin: 10px 0;
+      width: 80%;
+    }
+    body.dark {
+      background: #222;
+      color: #eee;
+    }
+    body.dark .skeleton {
+      background: #444;
     }
   </style>
 </head>
@@ -34,12 +55,11 @@
   <button id="theme-toggle">🌗 Сменить тему</button>
 
   <h1>Выберите эмоцию</h1>
-  <div id="loading">Загрузка эмоций...</div>
   <div id="emotion-filters"></div>
 
   <h2>Записи</h2>
   <div id="entries"></div>
-  <script>
+    <script>
     const emotions = ['😊', '😢', '😡', '😱', '😍'];
     const entries = {
       '😊': ['Сегодня было солнечно и приятно', 'Улыбка незнакомца сделала мой день'],
@@ -48,6 +68,25 @@
       '😱': ['Почти опоздала на поезд!', 'Увидела огромного паука'],
       '😍': ['Влюбилась в новый сериал', 'Кофе был идеальным']
     };
+
+    function renderSkeletons() {
+      const filters = document.getElementById('emotion-filters');
+      const entriesContainer = document.getElementById('entries');
+      filters.innerHTML = '';
+      entriesContainer.innerHTML = '';
+
+      for (let i = 0; i < 5; i++) {
+        const btn = document.createElement('div');
+        btn.className = 'skeleton skeleton-button';
+        filters.appendChild(btn);
+      }
+
+      for (let i = 0; i < 3; i++) {
+        const div = document.createElement('div');
+        div.className = 'skeleton skeleton-entry';
+        entriesContainer.appendChild(div);
+      }
+    }
 
     function renderFilters() {
       const container = document.getElementById('emotion-filters');
@@ -71,10 +110,10 @@
     }
 
     function fetchEmotions() {
-      document.getElementById('loading').style.display = 'block';
+      renderSkeletons();
       setTimeout(() => {
-        document.getElementById('loading').style.display = 'none';
         renderFilters();
+        document.getElementById('entries').innerHTML = '<i>Выберите эмоцию</i>';
       }, 500); // имитация задержки API
     }
 
@@ -86,3 +125,4 @@
   </script>
 </body>
 </html>
+

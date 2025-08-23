@@ -70,7 +70,7 @@
 <div id="emotion-list"></div>
 
 <script>
-const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec"; // Вставь свой Apps Script URL
+const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec";
 const clientId = new URLSearchParams(window.location.search).get('client_id') || 'defaultClient';
 
 const EMOTIONS = [
@@ -83,6 +83,26 @@ const EMOTIONS = [
   { id: "interest", text: "🧐 Ожидание / интерес" },
   { id: "trust", text: "🤗 Доверие / принятие" }
 ];
+
+// 🌈 Словарь для нормализации
+const emotionMap = {
+  "😢 Грусть / печаль": "sadness",
+  "😠 Злость / раздражение": "anger",
+  "😮 Удивление / возбуждение": "surprise",
+  "🤗 Доверие / принятие": "trust",
+  "😊 Радость / удовольствие": "joy",
+  "😨 Страх / тревога": "fear",
+  "🤢 Отвращение / неприязнь": "disgust",
+  "🧐 Ожидание / интерес": "interest",
+  "😐 Нейтральное состояние": "neutral"
+};
+
+function normalizeEmotionId(emotion_type, emotion_id) {
+  const validIds = EMOTIONS.map(e => e.id);
+  const cleanedId = emotion_id?.trim()?.toLowerCase();
+  if (validIds.includes(cleanedId)) return cleanedId;
+  return emotionMap[emotion_type] || "unknown";
+}
 
 let allEntries = [];
 
@@ -103,10 +123,12 @@ function renderFilters() {
   const container = document.getElementById('emotion-filters');
   container.innerHTML = "";
 
-  // Подсчёт записей по emotion_id
+  // Подсчёт записей по нормализованному emotion_id
   const counts = {};
   EMOTIONS.forEach(em => {
-    counts[em.id] = allEntries.filter(e => e.emotion_id?.trim() === em.id).length;
+    counts[em.id] = allEntries.filter(e =>
+      normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+    ).length;
   });
 
   // Кнопка "Все эмоции"
@@ -125,7 +147,9 @@ function renderFilters() {
     if (counts[em.id] > 0) {
       btn.className = "active";
       btn.onclick = () => {
-        const filtered = allEntries.filter(e => e.emotion_id?.trim() === em.id);
+        const filtered = allEntries.filter(e =>
+          normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+        );
         renderEmotions(filtered);
       };
     } else {
@@ -161,6 +185,7 @@ function renderEmotions(entries) {
 
 fetchEmotions();
 </script>
+
 
 </body>
 </html>

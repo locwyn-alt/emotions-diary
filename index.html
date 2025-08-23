@@ -103,9 +103,11 @@ function renderFilters() {
   const container = document.getElementById('emotion-filters');
   container.innerHTML = "";
 
-  // Считаем, есть ли записи по каждой эмоции
+  // Подсчёт записей по emotion_id
   const counts = {};
-  EMOTIONS.forEach(em => counts[em.id] = allEntries.filter(e => e.emotion_id === em.id).length);
+  EMOTIONS.forEach(em => {
+    counts[em.id] = allEntries.filter(e => e.emotion_id?.trim() === em.id).length;
+  });
 
   // Кнопка "Все эмоции"
   const allActive = allEntries.length > 0;
@@ -115,18 +117,21 @@ function renderFilters() {
   if (allActive) btnAll.onclick = () => renderEmotions(allEntries);
   container.appendChild(btnAll);
 
+  // Кнопки по эмоциям
   EMOTIONS.forEach(em => {
     const btn = document.createElement('button');
     btn.textContent = em.text;
+
     if (counts[em.id] > 0) {
       btn.className = "active";
       btn.onclick = () => {
-        const filtered = allEntries.filter(e => e.emotion_id === em.id);
+        const filtered = allEntries.filter(e => e.emotion_id?.trim() === em.id);
         renderEmotions(filtered);
       };
     } else {
       btn.className = "inactive";
     }
+
     container.appendChild(btn);
   });
 }

@@ -63,71 +63,64 @@
     }
 
     /* 🎯 Три ряда кнопок */
-#emotion-filters {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  max-width: 800px;
-  margin: 20px auto;
-}
+    #emotion-filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      max-width: 800px;
+      margin: 20px auto;
+    }
 
-#emotion-filters button {
-  padding: 10px 16px;
-  font-size: 15px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  border: none;
-  border-radius: 20px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-  width: 100%;
-}
+    #emotion-filters button {
+      padding: 10px 16px;
+      font-size: 15px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      border: none;
+      border-radius: 20px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      cursor: pointer;
+      transition: background-color 0.3s ease;
+      width: 100%;
+    }
 
-#emotion-filters button.all-emotions {
-  grid-column: span 4;
-  background-color: #2196f3;
-  color: white;
-  text-align: center;
-}
+    #emotion-filters button.all-emotions {
+      grid-column: span 4;
+      background-color: #2196f3;
+      color: white;
+      text-align: center;
+    }
 
+    #emotion-filters button:hover {
+      background-color: #8e24aa;
+    }
 
-#emotion-filters button:hover {
-  background-color: #8e24aa;
-}
+    #emotion-filters button.inactive {
+      background-color: #ccc;
+      color: #666;
+      cursor: default;
+    }
 
-#emotion-filters button.inactive {
-  background-color: #ccc;
-  color: #666;
-  cursor: default;
-}
+    @media (max-width: 600px) {
+      #emotion-filters {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
 
-#emotion-filters button.all-emotions {
-  grid-column: span 4;
-  background-color: #2196f3;
-  color: white;
-  text-align: center;
-}
+      #emotion-filters button {
+        flex: 0 0 auto;
+        margin: 6px;
+        width: auto;
+        max-width: 100%;
+      }
 
-@media (max-width: 600px) {
-  #emotion-filters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
-
-  #emotion-filters button {
-    flex: 0 0 auto;
-    margin: 6px;
-    width: auto;
-    max-width: 100%;
-  }
-
-#emotion-filters button.all-emotions {
-    flex-basis: 100%;
-  }
+      #emotion-filters button.all-emotions {
+        flex-basis: 100%;
+      }
+    }
 
     #emotion-list .entry {
       background-color: var(--card-bg);
@@ -226,7 +219,6 @@
     }
 
     let allEntries = [];
-
     async function fetchEmotions() {
       try {
         const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
@@ -251,58 +243,56 @@
       }
     }
 
-function renderFilters() {
-  const container = document.getElementById('emotion-filters');
-  container.innerHTML = "";
+    function renderFilters() {
+      const container = document.getElementById('emotion-filters');
+      container.innerHTML = "";
 
-  const btnAll = document.createElement('button');
-  btnAll.textContent = "Все эмоции";
-  btnAll.className = "all-emotions";
-  btnAll.onclick = () => renderEmotions(allEntries);
-  container.appendChild(btnAll);
+      const btnAll = document.createElement('button');
+      btnAll.textContent = "Все эмоции";
+      btnAll.className = "all-emotions";
+      btnAll.onclick = () => renderEmotions(allEntries);
+      container.appendChild(btnAll);
 
-  const firstRow = EMOTIONS.slice(0, 4);
-  const secondRow = EMOTIONS.slice(4, 8);
+      const firstRow = EMOTIONS.slice(0, 4);
+      const secondRow = EMOTIONS.slice(4, 8);
 
-  [firstRow, secondRow].forEach(row => {
-    row.forEach(em => {
-      const btn = document.createElement('button');
-      btn.textContent = em.text;
-      btn.onclick = () => {
-        const filtered = allEntries.filter(e =>
-          normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-        );
-        renderEmotions(filtered);
-      };
-      container.appendChild(btn);
-    });
-  });
-}
+      [firstRow, secondRow].forEach(row => {
+        row.forEach(em => {
+          const btn = document.createElement('button');
+          btn.textContent = em.text;
+          btn.onclick = () => {
+            const filtered = allEntries.filter(e =>
+              normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+            );
+            renderEmotions(filtered);
+          };
+          container.appendChild(btn);
+        });
+      });
+    }
 
-// ⬇️ Вынеси renderEmotions сюда, отдельно
-function renderEmotions(entries) {
-  const container = document.getElementById('emotion-list');
-  container.innerHTML = "";
-  if (entries.length === 0) {
-    container.innerHTML = "<p style='text-align:center;'>Нет записей для выбранной эмоции.</p>";
-    return;
-  }
+    function renderEmotions(entries) {
+      const container = document.getElementById('emotion-list');
+      container.innerHTML = "";
+      if (entries.length === 0) {
+        container.innerHTML = "<p style='text-align:center;'>Нет записей для выбранной эмоции.</p>";
+        return;
+      }
 
-  entries.forEach(e => {
-    const div = document.createElement('div');
-    div.className = "entry";
-    div.innerHTML = `
-      <h4>${e.emotion_type}</h4>
-      <p><b>Интенсивность:</b> ${e.emotion_intens}/10</p>
-      <p><b>Ситуация:</b> ${e.emotion_context}</p>
-      <p><b>Реакция:</b> ${e.emotion_reflex}</p>
-      <p><b>Мысли:</b> ${e.emotion_think}</p>
-      <p style="font-size:12px; color:#999;">${new Date(e.date).toLocaleString()}</p>
-    `;
-    container.appendChild(div);
-  });
-}
-
+      entries.forEach(e => {
+        const div = document.createElement('div');
+        div.className = "entry";
+        div.innerHTML = `
+          <h4>${e.emotion_type}</h4>
+          <p><b>Интенсивность:</b> ${e.emotion_intens}/10</p>
+          <p><b>Ситуация:</b> ${e.emotion_context}</p>
+          <p><b>Реакция:</b> ${e.emotion_reflex}</p>
+          <p><b>Мысли:</b> ${e.emotion_think}</p>
+          <p style="font-size:12px; color:#999;">${new Date(e.date).toLocaleString()}</p>
+        `;
+        container.appendChild(div);
+      });
+    }
 
     function applyTheme(theme) {
       document.body.classList.toggle('dark', theme === 'dark');

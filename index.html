@@ -172,7 +172,27 @@ function normalizeEmotionId(emotion_type, emotion_id) {
 
 let allEntries = [];
 
+function renderSkeletons() {
+  const filters = document.getElementById('emotion-filters');
+  const list = document.getElementById('emotion-list');
+  filters.innerHTML = '';
+  list.innerHTML = '';
+
+  for (let i = 0; i < 8; i++) {
+    const btn = document.createElement('div');
+    btn.className = 'skeleton skeleton-button';
+    filters.appendChild(btn);
+  }
+
+  for (let i = 0; i < 3; i++) {
+    const div = document.createElement('div');
+    div.className = 'skeleton skeleton-entry';
+    list.appendChild(div);
+  }
+}
+
 async function fetchEmotions() {
+  renderSkeletons();
   try {
     const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
     const data = await response.json();

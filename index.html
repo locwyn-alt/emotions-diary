@@ -65,14 +65,13 @@
     /* 🎯 Три ряда кнопок */
 #emotion-filters {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 12px;
   max-width: 800px;
   margin: 20px auto;
 }
 
 #emotion-filters button {
-  width: 100%;
   padding: 10px 16px;
   font-size: 15px;
   white-space: nowrap;
@@ -84,7 +83,16 @@
   color: var(--button-text);
   cursor: pointer;
   transition: background-color 0.3s ease;
+  width: 100%;
 }
+
+#emotion-filters button.all-emotions {
+  grid-column: span 4;
+  background-color: #2196f3;
+  color: white;
+  text-align: center;
+}
+
 
 #emotion-filters button:hover {
   background-color: #8e24aa;
@@ -97,9 +105,9 @@
 }
 
 #emotion-filters button.all-emotions {
+  grid-column: span 4;
   background-color: #2196f3;
   color: white;
-  flex-basis: 100%;
   text-align: center;
 }
 
@@ -241,38 +249,32 @@
     }
 
     function renderFilters() {
-  const container = document.getElementById('emotion-filters');
-  container.innerHTML = "";
+ const container = document.getElementById('emotion-filters');
+container.innerHTML = "";
 
-  const counts = {};
-  EMOTIONS.forEach(em => {
-    counts[em.id] = allEntries.filter(e =>
-      normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-    ).length;
-  });
+const btnAll = document.createElement('button');
+btnAll.textContent = "Все эмоции";
+btnAll.className = "all-emotions";
+btnAll.onclick = () => renderEmotions(allEntries);
+container.appendChild(btnAll);
 
-  const btnAll = document.createElement('button');
-  btnAll.textContent = "Все эмоции";
-  btnAll.className = allEntries.length > 0 ? "active all-emotions" : "inactive all-emotions";
-  if (allEntries.length > 0) btnAll.onclick = () => renderEmotions(allEntries);
-  container.appendChild(btnAll);
+// Разделим эмоции на два ряда по 4
+const firstRow = EMOTIONS.slice(0, 4);
+const secondRow = EMOTIONS.slice(4, 8);
 
-  EMOTIONS.forEach(em => {
+[firstRow, secondRow].forEach(row => {
+  row.forEach(em => {
     const btn = document.createElement('button');
     btn.textContent = em.text;
-    const count = counts[em.id];
-    btn.className = count > 0 ? "active" : "inactive";
-    if (count > 0) {
-      btn.onclick = () => {
-        const filtered = allEntries.filter(e =>
-          normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-        );
-        renderEmotions(filtered);
-      };
-    }
+    btn.onclick = () => {
+      const filtered = allEntries.filter(e =>
+        normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+      );
+      renderEmotions(filtered);
+    };
     container.appendChild(btn);
   });
-}
+});
 
 
     function renderEmotions(entries) {

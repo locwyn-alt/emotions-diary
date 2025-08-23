@@ -137,7 +137,7 @@
 <div id="emotion-filters"></div>
 <div id="emotion-list"></div>
 
-  <script>
+<script>
 const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec";
 const clientId = new URLSearchParams(window.location.search).get('client_id') || 'defaultClient';
 
@@ -245,8 +245,11 @@ function renderEmotions(entries) {
     `;
     container.appendChild(div);
   });
+
+  });
 }
 
+// 🌗 Тема: автоопределение, переключение, сохранение
 function applyTheme(theme) {
   document.body.classList.toggle('dark', theme === 'dark');
   localStorage.setItem('theme', theme);
@@ -259,7 +262,7 @@ function toggleTheme() {
   const next = current === 'dark' ? 'light' : 'dark';
   applyTheme(next);
 
-  // 🔁 Анимация кнопки
+  // 💫 Анимация кнопки
   const btn = document.getElementById('theme-toggle');
   btn.classList.add('clicked');
   setTimeout(() => btn.classList.remove('clicked'), 400);

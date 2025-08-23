@@ -129,6 +129,30 @@
       color: var(--text-color);
     }
   </style>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+    const filters = document.getElementById('emotion-filters');
+    const list = document.getElementById('emotion-list');
+
+    if (filters && list) {
+      filters.innerHTML = '';
+      list.innerHTML = '';
+
+      for (let i = 0; i < 8; i++) {
+        const btn = document.createElement('div');
+        btn.className = 'skeleton skeleton-button';
+        filters.appendChild(btn);
+      }
+
+      for (let i = 0; i < 3; i++) {
+        const div = document.createElement('div');
+        div.className = 'skeleton skeleton-entry';
+        list.appendChild(div);
+      }
+    }
+  });
+</script>
+ 
 </head>
 <body>
 

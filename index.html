@@ -1,87 +1,95 @@
 <!DOCTYPE html>
 <html lang="ru">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🌿 Дневник эмоций</title>
-<style>
-  body {
-    font-family: 'Segoe UI', sans-serif;
-    background-color: #f9f7f6;
-    color: #333;
-    padding: 20px;
-    max-width: 800px;
-    margin: auto;
-  }
-  h2 {
-    text-align: center;
-    margin-bottom: 16px;
-    color: #5a5a5a;
-  }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🌿 Дневник эмоций</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #f9f7f6;
+      color: #333;
+      padding: 20px;
+      max-width: 800px;
+      margin: auto;
+    }
+    h2 {
+      text-align: center;
+      margin-bottom: 16px;
+      color: #5a5a5a;
+    }
 
-  /* 🔧 Обновлённая сетка кнопок */
-  #emotion-filters {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 8px;
-    justify-content: center;
-    margin-bottom: 20px;
-    max-width: 600px;
-    margin-left: auto;
-    margin-right: auto;
-  }
+    /* 🎨 Сетка кнопок */
+    #emotion-filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-  #emotion-filters button {
-    padding: 10px 12px;
-    border-radius: 20px;
-    border: none;
-    cursor: pointer;
-    font-size: 14px;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-  }
+    #emotion-filters button {
+      padding: 10px 12px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      min-width: 0;
+    }
 
-  #emotion-filters button.active {
-    background-color: #6a1b9a;
-    color: white;
-  }
+    #emotion-filters button.active {
+      background-color: #6a1b9a;
+      color: white;
+    }
 
-  #emotion-filters button.inactive {
-    background-color: #ccc;
-    color: #888;
-    cursor: default;
-  }
+    #emotion-filters button.inactive {
+      background-color: #ccc;
+      color: #888;
+      cursor: default;
+    }
 
-  /* 🧩 Широкая кнопка "Все эмоции" */
-  #emotion-filters button.all-emotions {
-    grid-column: span 4;
-  }
+    #emotion-filters button.all-emotions {
+      grid-column: span 4;
+    }
 
-  #emotion-list .entry {
-    background-color: #fff;
-    border-radius: 12px;
-    padding: 16px;
-    margin-bottom: 12px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.05);
-  }
-  #emotion-list .entry h4 {
-    margin: 0 0 6px 0;
-    color: #6a1b9a;
-  }
-  #emotion-list .entry p {
-    margin: 2px 0;
-    color: #555;
-  }
-</style>
+    /* 📱 Адаптация для мобильных */
+    @media (max-width: 480px) {
+      #emotion-filters {
+        grid-template-columns: repeat(2, 1fr);
+        max-width: 100%;
+      }
+      #emotion-filters button.all-emotions {
+        grid-column: span 2;
+      }
+    }
+
+    #emotion-list .entry {
+      background-color: #fff;
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 12px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+    }
+    #emotion-list .entry h4 {
+      margin: 0 0 6px 0;
+      color: #6a1b9a;
+    }
+    #emotion-list .entry p {
+      margin: 2px 0;
+      color: #555;
+    }
+  </style>
 </head>
 <body>
 
 <h2>🌿 Ваши эмоции</h2>
 
-<div id="emotion-filters">
-  <!-- Кнопки будут динамически вставляться -->
-</div>
-
+<div id="emotion-filters"></div>
 <div id="emotion-list"></div>
 
 <script>

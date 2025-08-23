@@ -62,69 +62,62 @@
       100% { transform: scale(1); }
     }
 
-/* 🎨 Сетка кнопок */
+    /* 🎯 Три ряда кнопок */
     #emotion-filters {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      margin: 20px auto;
+      max-width: 800px;
+      align-items: center;
+    }
+
+    .emotion-row {
+      display: flex;
+      gap: 12px;
       justify-content: center;
-      margin-bottom: 20px;
-      max-width: 600px;
-      margin-left: auto;
-      margin-right: auto;
     }
 
-    #emotion-filters button {
-      padding: 10px 12px;
-      border-radius: 20px;
+    .emotion-row button {
+      padding: 10px 16px;
       border: none;
+      border-radius: 8px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 15px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      transition: background-color 0.3s ease;
       white-space: nowrap;
-      transition: all 0.2s ease;
-      min-width: 0;
     }
 
-    #emotion-filters button.active {
-      background-color: #6a1b9a;
-      color: white;
-    }
-
-    #emotion-filters button.inactive {
+    .emotion-row button.inactive {
       background-color: #ccc;
-      color: #888;
+      color: #666;
       cursor: default;
     }
 
-    #emotion-filters button.all-emotions {
-      grid-column: span 4;
-    }
-
-    /* 📱 Адаптация для мобильных */
-    @media (max-width: 480px) {
-      #emotion-filters {
-        grid-template-columns: repeat(2, 1fr);
-        max-width: 100%;
-      }
-      #emotion-filters button.all-emotions {
-        grid-column: span 2;
-      }
+    .emotion-row button.all-emotions {
+      background-color: #2196f3;
+      color: white;
     }
 
     #emotion-list .entry {
-      background-color: #fff;
+      background-color: var(--card-bg);
       border-radius: 12px;
       padding: 16px;
       margin-bottom: 12px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+      transition: background-color 0.4s ease;
     }
+
     #emotion-list .entry h4 {
       margin: 0 0 6px 0;
-      color: #6a1b9a;
+      color: var(--accent-color);
     }
+
     #emotion-list .entry p {
       margin: 2px 0;
-      color: #555;
+      color: var(--text-color);
     }
 
     /* 🌿 Прелоадер */
@@ -241,31 +234,55 @@
         ).length;
       });
 
-      const allActive = allEntries.length > 0;
+      // Ряд 1 — Все эмоции
+      const row1 = document.createElement('div');
+      row1.className = "emotion-row";
       const btnAll = document.createElement('button');
       btnAll.textContent = "Все эмоции";
-      btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
-      if (allActive) btnAll.onclick = () => renderEmotions(allEntries);
-      container.appendChild(btnAll);
+      btnAll.className = allEntries.length > 0 ? "active all-emotions" : "inactive all-emotions";
+      if (allEntries.length > 0) btnAll.onclick = () => renderEmotions(allEntries);
+      row1.appendChild(btnAll);
+      container.appendChild(row1);
 
-      EMOTIONS.forEach(em => {
+      // Ряд 2 — первые 4 эмоции
+      const row2 = document.createElement('div');
+      row2.className = "emotion-row";
+      EMOTIONS.slice(0, 4).forEach(em => {
         const btn = document.createElement('button');
         btn.textContent = em.text;
-
-        if (counts[em.id] > 0) {
-          btn.className = "active";
+        const count = counts[em.id];
+        btn.className = count > 0 ? "active" : "inactive";
+        if (count > 0) {
           btn.onclick = () => {
             const filtered = allEntries.filter(e =>
               normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
             );
             renderEmotions(filtered);
           };
-        } else {
-          btn.className = "inactive";
         }
-
-        container.appendChild(btn);
+        row2.appendChild(btn);
       });
+      container.appendChild(row2);
+
+      // Ряд 3 — оставшиеся 4 эмоции
+      const row3 = document.createElement('div');
+      row3.className = "emotion-row";
+      EMOTIONS.slice(4).forEach(em => {
+        const btn = document.createElement('button');
+        btn.textContent = em.text;
+        const count = counts[em.id];
+        btn.className = count > 0 ? "active" : "inactive";
+        if (count > 0) {
+          btn.onclick = () => {
+            const filtered = allEntries.filter(e =>
+              normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+            );
+            renderEmotions(filtered);
+          };
+        }
+        row3.appendChild(btn);
+      });
+      container.appendChild(row3);
     }
 
     function renderEmotions(entries) {
@@ -319,9 +336,3 @@
   </script>
 </body>
 </html>
-
-
-
-
-
-

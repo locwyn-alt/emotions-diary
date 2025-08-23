@@ -222,7 +222,7 @@ function renderFilters() {
 
     container.appendChild(btn);
   });
-}
+} // ← ✅ вот эта скобка была потеряна
 
 function renderEmotions(entries) {
   const container = document.getElementById('emotion-list');
@@ -245,9 +245,8 @@ function renderEmotions(entries) {
     `;
     container.appendChild(div);
   });
-
-  });
 }
+
 
 // 🌗 Тема: автоопределение, переключение, сохранение
 function applyTheme(theme) {

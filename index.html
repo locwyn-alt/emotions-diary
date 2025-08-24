@@ -267,55 +267,62 @@
       }
     }
 
-    function renderFilters() {
-      const container = document.getElementById('emotion-filters');
-      container.innerHTML = "";
+   function renderFilters() {
+  const container = document.getElementById('emotion-filters');
+  container.innerHTML = "";
 
-      const counts = {};
-      EMOTIONS.forEach(em => {
-        counts[em.id] = allEntries.filter(e =>
+  const counts = {};
+  EMOTIONS.forEach(em => {
+    counts[em.id] = allEntries.filter(e =>
+      normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+    ).length;
+  });
+
+  // Кнопка "Все эмоции"
+  const allActive = allEntries.length > 0;
+  const btnAll = document.createElement('button');
+  btnAll.textContent = "Все эмоции";
+  btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
+  if (allActive) btnAll.onclick = () => {
+    currentFilter = null;
+    renderFilters();
+    renderEmotions(allEntries);
+  }
+  // Выделение если активна
+  if (currentFilter === null) {
+    btnAll.style.backgroundColor = "#8e24aa";
+    btnAll.style.color = "#fff";
+  }
+  container.appendChild(btnAll);
+
+  // Кнопки эмоций
+  EMOTIONS.forEach(em => {
+    const btn = document.createElement('button');
+    btn.textContent = em.text;
+
+    if (counts[em.id] > 0) {
+      btn.className = "active";
+      btn.onclick = () => {
+        const filtered = allEntries.filter(e =>
           normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-        ).length;
-      });
-
-      const allActive = allEntries.length > 0;
-      const btnAll = document.createElement('button');
-      btnAll.textContent = "Все эмоции";
-      btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
-      if (allActive) btnAll.onclick = () => {
-        currentFilter = null;
+        );
+        currentFilter = em.id;
         renderFilters();
-        renderEmotions(allEntries);
-      }
-      container.appendChild(btnAll);
-
-      EMOTIONS.forEach(em => {
-        const btn = document.createElement('button');
-        btn.textContent = em.text;
-
-        if (counts[em.id] > 0) {
-          btn.className = "active";
-          btn.onclick = () => {
-            const filtered = allEntries.filter(e =>
-              normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-            );
-            currentFilter = em.id;
-            renderFilters();
-            renderEmotions(filtered);
-          };
-        } else {
-          btn.className = "inactive";
-        }
-
-        // Индикатор активной кнопки
-        if (currentFilter === em.id) {
-          btn.style.border = "2px solid var(--accent-color)";
-          btn.style.transform = "scale(1.05)";
-        }
-
-        container.appendChild(btn);
-      });
+        renderEmotions(filtered);
+      };
+    } else {
+      btn.className = "inactive";
     }
+
+    // Выделение активной кнопки
+    if (currentFilter === em.id) {
+      btn.style.backgroundColor = "#8e24aa";
+      btn.style.color = "#fff";
+    }
+
+    container.appendChild(btn);
+  });
+}
 
     function renderEmotions(entries) {
       const container = document.getElementById('emotion-list');

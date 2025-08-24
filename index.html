@@ -52,15 +52,17 @@ h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
 #emotion-filters button {
   font-family: 'Segoe UI', sans-serif; padding:10px 12px; border-radius:20px;
   border:none; cursor:pointer; font-size:14px; white-space:nowrap;
-  transition: background-color 0.4s ease, color 0.4s ease; /* плавный переход */
+  transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Светлая тема */
-body:not(.dark) #emotion-filters button.active { background-color:#0088cc; color:#fff; }
-body:not(.dark) #emotion-filters button.inactive { background-color:#f0f0f0; color:#555; }
+/* Активная кнопка всегда зелёная */
+#emotion-filters button.active {
+  background-color: #4caf50;
+  color: #fff;
+}
 
-/* Темная тема */
-body.dark #emotion-filters button.active { background-color:#bb86fc; color:#fff; }
+/* Неактивные кнопки */
+body:not(.dark) #emotion-filters button.inactive { background-color:#f0f0f0; color:#555; }
 body.dark #emotion-filters button.inactive { background-color:#3a3a3a; color:#aaa; }
 
 #emotion-filters button.all-emotions { grid-column: span 4; }
@@ -129,7 +131,12 @@ const emotionMap = {
   "😐 Нейтральное состояние":"neutral"
 };
 
-function normalizeEmotionId(type,id){const v=EMOTIONS.map(e=>e.id);const c=id?.trim()?.toLowerCase();if(v.includes(c))return c;return emotionMap[type]||"unknown";}
+function normalizeEmotionId(type,id){
+  const v=EMOTIONS.map(e=>e.id);
+  const c=id?.trim()?.toLowerCase();
+  if(v.includes(c)) return c;
+  return emotionMap[type] || "unknown";
+}
 
 let allEntries=[]; let currentFilter=null;
 
@@ -137,8 +144,11 @@ async function fetchEmotions(){
   try{
     const resp=await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
     const data=await resp.json();
-    if(!Array.isArray(data)||data.length===0){document.getElementById('emotion-list').innerHTML="<p style='text-align:center;'>Нет записей для этого пользователя.</p>";}
-    else{allEntries=data; renderFilters(); renderEmotions(allEntries);}
+    if(!Array.isArray(data)||data.length===0){
+      document.getElementById('emotion-list').innerHTML="<p style='text-align:center;'>Нет записей для этого пользователя.</p>";
+    } else {
+      allEntries=data; renderFilters(); renderEmotions(allEntries);
+    }
     document.getElementById('loader').style.display='none';
     document.querySelector('main').style.display='block';
   }catch(err){
@@ -151,15 +161,23 @@ async function fetchEmotions(){
 
 function renderFilters(){
   const c=document.getElementById('emotion-filters'); c.innerHTML="";
-  const counts={}; EMOTIONS.forEach(em=>{counts[em.id]=allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id).length;});
-  const allActive=allEntries.length>0; const btnAll=document.createElement('button');
-  btnAll.textContent="Все эмоции"; btnAll.className=allActive?"active all-emotions":"inactive all-emotions";
+  const counts={}; EMOTIONS.forEach(em=>{
+    counts[em.id]=allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id).length;
+  });
+  const allActive=allEntries.length>0; 
+  const btnAll=document.createElement('button');
+  btnAll.textContent="Все эмоции"; 
+  btnAll.className=allActive?"active all-emotions":"inactive all-emotions";
   if(allActive) btnAll.onclick=()=>{currentFilter=null; renderFilters(); renderEmotions(allEntries);}
   c.appendChild(btnAll);
+
   EMOTIONS.forEach(em=>{
-    const btn=document.createElement('button'); btn.textContent=em.text;
-    if(counts[em.id]>0){btn.className="active"; btn.onclick=()=>{currentFilter=em.id; renderFilters(); renderEmotions(allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id));}}
-    else btn.className="inactive";
+    const btn=document.createElement('button'); 
+    btn.textContent=em.text;
+    if(counts[em.id]>0){
+      btn.className="active"; 
+      btn.onclick=()=>{currentFilter=em.id; renderFilters(); renderEmotions(allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id));}
+    } else btn.className="inactive";
     c.appendChild(btn);
   });
 }
@@ -188,10 +206,14 @@ function toggleTheme(){
   setTimeout(()=>btn.classList.remove('clicked'),400);
 }
 
-const savedTheme=localStorage.getItem('theme'); const prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
+const savedTheme=localStorage.getItem('theme'); 
+const prefersDark=window.matchMedia('(prefers-color-scheme: dark)').matches;
 applyTheme(savedTheme||(prefersDark?'dark':'light'));
 
-document.addEventListener("DOMContentLoaded",()=>{document.getElementById('theme-toggle').addEventListener('click',toggleTheme); fetchEmotions();});
+document.addEventListener("DOMContentLoaded",()=>{
+  document.getElementById('theme-toggle').addEventListener('click',toggleTheme); 
+  fetchEmotions();
+});
 </script>
 </body>
 </html>

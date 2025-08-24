@@ -139,9 +139,9 @@
      
   /* 👉 "Все эмоции" идёт в облако, но всегда первой */
   #emotion-filters button.all-emotions {
-    flex-basis: auto;
-    text-align: center;
-    order: -1;
+  display: inline-flex !important; /* 👉 теперь это не блочный элемент */
+  flex-basis: auto !important;
+  order: -1; /* чтобы шла первой */
   }
 }
 

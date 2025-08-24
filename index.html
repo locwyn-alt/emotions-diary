@@ -104,7 +104,7 @@
       #emotion-filters {
         display: flex !important;
         flex-wrap: wrap;
-        justify-content: center; /* облако по центру */
+        justify-content: center;
         gap: 4px;
         margin: 16px auto;
         max-width: 100%;
@@ -122,24 +122,9 @@
         border: none;
         cursor: pointer;
         white-space: nowrap;
-        text-align: center;
         transition: all 0.2s ease;
       }
 
-      #emotion-filters button.active {
-        background-color: var(--accent-color);
-        color: #fff;
-        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-        transform: scale(1.05);
-      }
-
-      #emotion-filters button.inactive {
-        background-color: #ccc;
-        color: #888;
-        cursor: default;
-      }
-
-      /* 👉 "Все эмоции" идёт в облако, но всегда первой */
       #emotion-filters button.all-emotions {
         flex-basis: 100%;
         text-align: center !important;
@@ -206,6 +191,7 @@
     <div id="emotion-filters"></div>
     <div id="emotion-list"></div>
   </main>
+
   <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec";
     const clientId = new URLSearchParams(window.location.search).get('client_id') || 'defaultClient';
@@ -233,15 +219,15 @@
       "😐 Нейтральное состояние": "neutral"
     };
 
-    let currentFilter = null; // выбранная эмоция
-    let allEntries = [];
-
     function normalizeEmotionId(emotion_type, emotion_id) {
       const validIds = EMOTIONS.map(e => e.id);
       const cleanedId = emotion_id?.trim()?.toLowerCase();
       if (validIds.includes(cleanedId)) return cleanedId;
       return emotionMap[emotion_type] || "unknown";
     }
+
+    let allEntries = [];
+    let currentFilter = null;
 
     async function fetchEmotions() {
       try {
@@ -267,62 +253,59 @@
       }
     }
 
-   function renderFilters() {
-  const container = document.getElementById('emotion-filters');
-  container.innerHTML = "";
+    function renderFilters() {
+      const container = document.getElementById('emotion-filters');
+      container.innerHTML = "";
 
-  const counts = {};
-  EMOTIONS.forEach(em => {
-    counts[em.id] = allEntries.filter(e =>
-      normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-    ).length;
-  });
-
-  // Кнопка "Все эмоции"
-  const allActive = allEntries.length > 0;
-  const btnAll = document.createElement('button');
-  btnAll.textContent = "Все эмоции";
-  btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
-  if (allActive) btnAll.onclick = () => {
-    currentFilter = null;
-    renderFilters();
-    renderEmotions(allEntries);
-  }
-  // Выделение если активна
-  if (currentFilter === null) {
-    btnAll.style.backgroundColor = "#8e24aa";
-    btnAll.style.color = "#fff";
-  }
-  container.appendChild(btnAll);
-
-  // Кнопки эмоций
-  EMOTIONS.forEach(em => {
-    const btn = document.createElement('button');
-    btn.textContent = em.text;
-
-    if (counts[em.id] > 0) {
-      btn.className = "active";
-      btn.onclick = () => {
-        const filtered = allEntries.filter(e =>
+      const counts = {};
+      EMOTIONS.forEach(em => {
+        counts[em.id] = allEntries.filter(e =>
           normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-        );
-        currentFilter = em.id;
+        ).length;
+      });
+
+      // Кнопка "Все эмоции"
+      const allActive = allEntries.length > 0;
+      const btnAll = document.createElement('button');
+      btnAll.textContent = "Все эмоции";
+      btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
+      if (allActive) btnAll.onclick = () => {
+        currentFilter = null;
         renderFilters();
-        renderEmotions(filtered);
-      };
-    } else {
-      btn.className = "inactive";
-    }
+        renderEmotions(allEntries);
+      }
+      if (currentFilter === null) {
+        btnAll.style.backgroundColor = "#8e24aa";
+        btnAll.style.color = "#fff";
+      }
+      container.appendChild(btnAll);
 
-    // Выделение активной кнопки
-    if (currentFilter === em.id) {
-      btn.style.backgroundColor = "#8e24aa";
-      btn.style.color = "#fff";
-    }
+      EMOTIONS.forEach(em => {
+        const btn = document.createElement('button');
+        btn.textContent = em.text;
 
-    container.appendChild(btn);
-  });
-}
+        if (counts[em.id] > 0) {
+          btn.className = "active";
+          btn.onclick = () => {
+            const filtered = allEntries.filter(e =>
+              normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+            );
+            currentFilter = em.id;
+            renderFilters();
+            renderEmotions(filtered);
+          };
+        } else {
+          btn.className = "inactive";
+        }
+
+        if (currentFilter === em.id) {
+          btn.style.backgroundColor = "#8e24aa";
+          btn.style.color = "#fff";
+        }
+
+        container.appendChild(btn);
+      });
+    }
 
     function renderEmotions(entries) {
       const container = document.getElementById('emotion-list');

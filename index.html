@@ -99,51 +99,52 @@
       grid-column: span 4;
     }
 
-    
     /* 📱 Облако на мобильных */
-   @media (max-width: 820px) {
-     
-  #emotion-filters {
-    display: flex !important;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 4px;
-    margin: 16px auto;
-    max-width: 100%;
-  }
+    @media (max-width: 820px) {
+      #emotion-filters {
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center; /* облако по центру */
+        gap: 4px;
+        margin: 16px auto;
+        max-width: 100%;
+      }
 
-  #emotion-filters button {
-    flex: 0 1 auto;
-    height: 32px;
-    margin: 2px;
-    padding: 0px 6px;
-    font-size: 12px;
-    border-radius: 20px;
-    background-color: var(--button-bg);
-    color: var(--button-text);
-    border: none;
-    cursor: pointer;
-    white-space: nowrap;
-    transition: all 0.2s ease;
-  }
+      #emotion-filters button {
+        flex: 0 1 auto;
+        height: 32px;
+        margin: 2px;
+        padding: 0px 8px;
+        font-size: 12px;
+        border-radius: 20px;
+        background-color: var(--button-bg);
+        color: var(--button-text);
+        border: none;
+        cursor: pointer;
+        white-space: nowrap;
+        text-align: center;
+        transition: all 0.2s ease;
+      }
 
-  #emotion-filters button.active {
-    background-color: var(--button-bg);
-    color: var(--button-text);
-  }
+      #emotion-filters button.active {
+        background-color: var(--accent-color);
+        color: #fff;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        transform: scale(1.05);
+      }
 
-  #emotion-filters button.inactive {
-    background-color: #ccc;
-    color: #888;
-    cursor: default;
-  }
-     
-  /* 👉 "Все эмоции" идёт в облако, но всегда первой */
-  #emotion-filters button.all-emotions {
-    flex-basis: 100%;
-    text-align: center !important;
-  }
-}
+      #emotion-filters button.inactive {
+        background-color: #ccc;
+        color: #888;
+        cursor: default;
+      }
+
+      /* 👉 "Все эмоции" идёт в облако, но всегда первой */
+      #emotion-filters button.all-emotions {
+        flex-basis: 100%;
+        text-align: center !important;
+      }
+    }
 
     #emotion-list .entry {
       background-color: var(--card-bg);
@@ -232,14 +233,15 @@
       "😐 Нейтральное состояние": "neutral"
     };
 
+    let currentFilter = null; // выбранная эмоция
+    let allEntries = [];
+
     function normalizeEmotionId(emotion_type, emotion_id) {
       const validIds = EMOTIONS.map(e => e.id);
       const cleanedId = emotion_id?.trim()?.toLowerCase();
       if (validIds.includes(cleanedId)) return cleanedId;
       return emotionMap[emotion_type] || "unknown";
     }
-
-    let allEntries = [];
 
     async function fetchEmotions() {
       try {
@@ -280,7 +282,11 @@
       const btnAll = document.createElement('button');
       btnAll.textContent = "Все эмоции";
       btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
-      if (allActive) btnAll.onclick = () => renderEmotions(allEntries);
+      if (allActive) btnAll.onclick = () => {
+        currentFilter = null;
+        renderFilters();
+        renderEmotions(allEntries);
+      }
       container.appendChild(btnAll);
 
       EMOTIONS.forEach(em => {
@@ -293,10 +299,18 @@
             const filtered = allEntries.filter(e =>
               normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
             );
+            currentFilter = em.id;
+            renderFilters();
             renderEmotions(filtered);
           };
         } else {
           btn.className = "inactive";
+        }
+
+        // Индикатор активной кнопки
+        if (currentFilter === em.id) {
+          btn.style.border = "2px solid var(--accent-color)";
+          btn.style.transform = "scale(1.05)";
         }
 
         container.appendChild(btn);
@@ -306,10 +320,14 @@
     function renderEmotions(entries) {
       const container = document.getElementById('emotion-list');
       container.innerHTML = "";
+
       if (entries.length === 0) {
         container.innerHTML = "<p style='text-align:center;'>Нет записей для выбранной эмоции.</p>";
         return;
       }
+
+      // Сортировка по дате
+      entries.sort((a, b) => new Date(b.date) - new Date(a.date));
 
       entries.forEach(e => {
         const div = document.createElement('div');

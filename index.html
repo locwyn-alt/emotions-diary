@@ -62,54 +62,48 @@
       100% { transform: scale(1); }
     }
 
-    /* 🎯 Три ряда кнопок */
-#emotion-filters {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  justify-content: center;
-}
-
-#emotion-filters button {
-  flex: 0 0 auto;
-  padding: 10px 16px;
-  font-size: 15px;
-  border-radius: 20px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-#emotion-filters button.all-emotions {
-  flex-basis: 100%;
-  background-color: #2196f3;
-  color: white;
-  text-align: center;
-}
-
-    #emotion-filters button:hover {
-      background-color: #8e24aa;
+    /* 🖥️ Десктоп: сетка 4 ряда */
+    #emotion-filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: auto auto auto auto;
+      gap: 12px;
+      margin: 20px auto;
+      max-width: 800px;
     }
 
-    #emotion-filters button.inactive {
-      background-color: #ccc;
-      color: #666;
-      cursor: default;
+    #emotion-filters button {
+      padding: 10px 16px;
+      font-size: 15px;
+      border-radius: 20px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      width: 100%;
     }
 
+    #emotion-filters button.all-emotions {
+      grid-column: span 4;
+      background-color: #2196f3;
+      color: white;
+      text-align: center;
+    }
+
+    /* 📱 Мобильная версия: облако */
     @media (max-width: 600px) {
       #emotion-filters {
         display: flex;
         flex-wrap: wrap;
         justify-content: center;
+        gap: 8px;
       }
 
       #emotion-filters button {
         flex: 0 0 auto;
-        margin: 6px;
         width: auto;
         max-width: 100%;
       }
@@ -138,7 +132,6 @@
       color: var(--text-color);
     }
 
-    /* 🌿 Прелоадер */
     #loader {
       position: fixed;
       top: 0; left: 0;
@@ -168,7 +161,8 @@
     }
   </style>
 </head>
-<body>
+
+  <body>
   <div id="loader">
     <div class="spinner"></div>
     <p>Загружаем эмоции...</p>
@@ -220,20 +214,12 @@
       try {
         const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
         const data = await response.json();
-        console.log("📦 Полученные данные:", data);
-
-        if (!Array.isArray(data) || data.length === 0) {
-          document.getElementById('emotion-list').innerHTML = "<p style='text-align:center;'>Нет записей для этого пользователя.</p>";
-        } else {
-          allEntries = data;
-          renderFilters();
-          renderEmotions(allEntries);
-        }
-
+        allEntries = data;
+        renderFilters();
+        renderEmotions(allEntries);
         document.getElementById('loader').style.display = 'none';
         document.querySelector('main').style.display = 'block';
       } catch (err) {
-        console.error("❌ Ошибка при получении данных:", err);
         document.getElementById('emotion-list').innerHTML = "<p style='text-align:center;'>Ошибка загрузки данных.</p>";
         document.getElementById('loader').style.display = 'none';
         document.querySelector('main').style.display = 'block';
@@ -250,13 +236,16 @@
       btnAll.onclick = () => renderEmotions(allEntries);
       container.appendChild(btnAll);
 
-      const firstRow = EMOTIONS.slice(0, 4);
-      const secondRow = EMOTIONS.slice(4, 8);
+      const rows = [
+        EMOTIONS.slice(0, 4),
+        EMOTIONS.slice(4, 6),
+        EMOTIONS.slice(6, 8)
+      ];
 
-      [firstRow, secondRow].forEach(row => {
+      rows.forEach(row => {
         row.forEach(em => {
           const btn = document.createElement('button');
-          btn.textContent = em.text;
+                    btn.textContent = em.text;
           btn.onclick = () => {
             const filtered = allEntries.filter(e =>
               normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
@@ -319,3 +308,4 @@
   </script>
 </body>
 </html>
+

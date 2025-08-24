@@ -62,7 +62,7 @@
       100% { transform: scale(1); }
     }
 
-    /* 🎨 Сетка кнопок из первого кода */
+    /* 💻 Сетка на десктопе */
     #emotion-filters {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -99,12 +99,22 @@
       grid-column: span 4;
     }
 
+    /* 📱 Облако на мобильных */
     @media (max-width: 480px) {
       #emotion-filters {
-        grid-template-columns: repeat(2, 1fr);
+        display: flex !important;
+        flex-wrap: wrap;
+        justify-content: center;
+        gap: 8px;
       }
+
+      #emotion-filters button {
+        flex: 0 0 auto;
+        margin: 6px;
+      }
+
       #emotion-filters button.all-emotions {
-        grid-column: span 2;
+        flex-basis: 100%;
       }
     }
 
@@ -168,7 +178,7 @@
     <div id="emotion-filters"></div>
     <div id="emotion-list"></div>
   </main>
-    <script>
+  <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec";
     const clientId = new URLSearchParams(window.location.search).get('client_id') || 'defaultClient';
 
@@ -317,4 +327,3 @@
   </script>
 </body>
 </html>
-

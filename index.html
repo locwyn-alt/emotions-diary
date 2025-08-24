@@ -103,7 +103,7 @@ body.dark #emotion-filters button.inactive {
 </style>
 </head>
 <body>
-<div id="loader"><div class="spinner"></div><p>Загружаем эмоции...</p></div>
+<div id="loader"><div class="spinner"></div><p>Загружаю все твои эмоции...</p></div>
 <main style="display:none;">
   <h2>🌿 Ваши эмоции</h2>
   <button id="theme-toggle">🌙</button>
@@ -191,7 +191,7 @@ function renderFilters(){
 
 function renderEmotions(entries){
   const c=document.getElementById('emotion-list'); c.innerHTML="";
-  if(entries.length===0){c.innerHTML="<p style='text-align:center;'>Нет записей для выбранной эмоции.</p>"; return;}
+  if(entries.length===0){c.innerHTML="<p style='text-align:center;'>🙈 У тебя пока нет записей для выбранной эмоции</p>"; return;}
   entries.sort((a,b)=>new Date(b.date)-new Date(a.date));
   entries.forEach(e=>{
     const d=document.createElement('div'); d.className="entry";

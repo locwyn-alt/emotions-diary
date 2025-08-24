@@ -55,7 +55,7 @@ h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
   transition: background-color 0.4s ease, color 0.4s ease;
 }
 
-/* Активная кнопка всегда зелёная */
+/* Активная кнопка (выбранная) */
 #emotion-filters button.active {
   background-color: #4caf50;
   color: #fff;
@@ -138,7 +138,8 @@ function normalizeEmotionId(type,id){
   return emotionMap[type] || "unknown";
 }
 
-let allEntries=[]; let currentFilter=null;
+let allEntries=[]; 
+let currentFilter=null; // null = все эмоции
 
 async function fetchEmotions(){
   try{
@@ -164,20 +165,28 @@ function renderFilters(){
   const counts={}; EMOTIONS.forEach(em=>{
     counts[em.id]=allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id).length;
   });
-  const allActive=allEntries.length>0; 
+
+  // Кнопка "Все эмоции"
   const btnAll=document.createElement('button');
   btnAll.textContent="Все эмоции"; 
-  btnAll.className=allActive?"active all-emotions":"inactive all-emotions";
-  if(allActive) btnAll.onclick=()=>{currentFilter=null; renderFilters(); renderEmotions(allEntries);}
+  btnAll.className=(currentFilter===null) ? "active all-emotions" : "inactive all-emotions";
+  btnAll.onclick=()=>{currentFilter=null; renderFilters(); renderEmotions(allEntries);};
   c.appendChild(btnAll);
 
+  // Остальные эмоции
   EMOTIONS.forEach(em=>{
     const btn=document.createElement('button'); 
     btn.textContent=em.text;
     if(counts[em.id]>0){
-      btn.className="active"; 
-      btn.onclick=()=>{currentFilter=em.id; renderFilters(); renderEmotions(allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id));}
-    } else btn.className="inactive";
+      btn.className=(currentFilter===em.id) ? "active" : "inactive"; 
+      btn.onclick=()=>{
+        currentFilter=em.id; 
+        renderFilters(); 
+        renderEmotions(allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id));
+      }
+    } else {
+      btn.className="inactive";
+    }
     c.appendChild(btn);
   });
 }

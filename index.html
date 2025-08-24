@@ -239,7 +239,7 @@
       try {
         const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
         const data = await response.json();
-        console.log("📦 Полученные данные:", data);
+        console.log("📦 Полученные данные:", data);  
 
         if (!Array.isArray(data) || data.length === 0) {
           document.getElementById('emotion-list').innerHTML = "<p style='text-align:center;'>Нет записей для этого пользователя.</p>";
@@ -359,6 +359,10 @@
 
     const savedTheme = localStorage.getItem('theme');
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+    console.log("Применяем тему:", savedTheme || (prefersDark ? 'dark' : 'light'));       /* потом убрать строку */
+
+    
     applyTheme(savedTheme || (prefersDark ? 'dark' : 'light'));
 
     document.addEventListener("DOMContentLoaded", () => {

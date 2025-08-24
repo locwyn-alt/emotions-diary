@@ -126,6 +126,17 @@
     transition: all 0.2s ease;
   }
 
+  #emotion-filters button.active {
+    background-color: var(--button-bg);
+    color: var(--button-text);
+  }
+
+  #emotion-filters button.inactive {
+    background-color: #ccc;
+    color: #888;
+    cursor: default;
+  }
+     
   #emotion-filters button.all-emotions {
     flex-basis: 100%;
     text-align: center;

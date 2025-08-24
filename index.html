@@ -57,12 +57,19 @@ h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
 
 /* Активная кнопка (выбранная) */
 #emotion-filters button.active {
-  background-color: #4caf50;
-  color: #fff;
+  background-color: #4caf50 !important;
+  color: #fff !important;
 }
 
-/* Неактивные кнопки — оставляем как есть, без изменения цветов */
-#emotion-filters button.inactive {}
+/* Неактивные кнопки — цвета как в Телеграме */
+body:not(.dark) #emotion-filters button.inactive { 
+  background-color: #f0f0f0; 
+  color: #555; 
+}
+body.dark #emotion-filters button.inactive { 
+  background-color: #2c2c2c; 
+  color: #ddd; 
+}
 
 /* Кнопка "Все эмоции" */
 #emotion-filters button.all-emotions { grid-column: span 4; }
@@ -162,14 +169,11 @@ async function fetchEmotions(){
 
 function renderFilters(){
   const c=document.getElementById('emotion-filters'); c.innerHTML="";
-  const counts={}; EMOTIONS.forEach(em=>{
-    counts[em.id]=allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id).length;
-  });
 
   // Кнопка "Все эмоции"
   const btnAll=document.createElement('button');
   btnAll.textContent="Все эмоции"; 
-  btnAll.classList.toggle("active", currentFilter===null);
+  btnAll.className = currentFilter===null ? "active all-emotions" : "inactive all-emotions";
   btnAll.onclick=()=>{currentFilter=null; renderFilters(); renderEmotions(allEntries);};
   c.appendChild(btnAll);
 
@@ -177,7 +181,7 @@ function renderFilters(){
   EMOTIONS.forEach(em=>{
     const btn=document.createElement('button'); 
     btn.textContent=em.text;
-    btn.classList.toggle("active", currentFilter===em.id); 
+    btn.className = (currentFilter===em.id) ? "active" : "inactive";
     btn.onclick=()=>{
       currentFilter=em.id; 
       renderFilters(); 

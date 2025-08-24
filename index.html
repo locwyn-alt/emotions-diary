@@ -62,60 +62,51 @@
       100% { transform: scale(1); }
     }
 
-    /* 🖥️ Десктоп: сетка 4 ряда */
-#emotion-filters {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 12px;
-  max-width: 800px;
-  margin: 20px auto;
-}
+    /* 🎨 Сетка кнопок из первого кода */
+    #emotion-filters {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      justify-content: center;
+      margin-bottom: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+    }
 
-#emotion-filters .row {
-  display: contents;
-}
+    #emotion-filters button {
+      padding: 10px 12px;
+      border-radius: 20px;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
 
-#emotion-filters button {
-  padding: 10px 16px;
-  font-size: 15px;
-  border-radius: 20px;
-  background-color: var(--button-bg);
-  color: var(--button-text);
-  border: none;
-  cursor: pointer;
-  white-space: nowrap;
-  width: 100%;
-}
+    #emotion-filters button.active {
+      background-color: var(--button-bg);
+      color: var(--button-text);
+    }
 
-#emotion-filters button.all-emotions {
-  grid-column: span 4;
-  background-color: #2196f3;
-  color: white;
-  text-align: center;
-}
+    #emotion-filters button.inactive {
+      background-color: #ccc;
+      color: #888;
+      cursor: default;
+    }
 
-/* 📱 Мобильная версия — облако */
-@media (max-width: 600px) {
-  #emotion-filters {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-  }
+    #emotion-filters button.all-emotions {
+      grid-column: span 4;
+    }
 
-  #emotion-filters .row {
-    display: contents;
-  }
-
-  #emotion-filters button {
-    flex: 0 0 auto;
-    width: auto;
-    max-width: 100%;
-  }
-
-  #emotion-filters button.all-emotions {
-    flex-basis: 100%;
-  }
-}
+    @media (max-width: 480px) {
+      #emotion-filters {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      #emotion-filters button.all-emotions {
+        grid-column: span 2;
+      }
+    }
 
     #emotion-list .entry {
       background-color: var(--card-bg);
@@ -165,8 +156,7 @@
     }
   </style>
 </head>
-
-  <body>
+<body>
   <div id="loader">
     <div class="spinner"></div>
     <p>Загружаем эмоции...</p>
@@ -178,8 +168,7 @@
     <div id="emotion-filters"></div>
     <div id="emotion-list"></div>
   </main>
-
-  <script>
+    <script>
     const API_URL = "https://script.google.com/macros/s/AKfycbxID_jyzS4sGpjnLUZycfsbGoCuoqKQCzRjv_AoqnjeqWEV57ZL7qDgn5KIpWdpO-73/exec";
     const clientId = new URLSearchParams(window.location.search).get('client_id') || 'defaultClient';
 
@@ -214,16 +203,25 @@
     }
 
     let allEntries = [];
+
     async function fetchEmotions() {
       try {
         const response = await fetch(`${API_URL}?client_id=${encodeURIComponent(clientId)}`);
         const data = await response.json();
-        allEntries = data;
-        renderFilters();
-        renderEmotions(allEntries);
+        console.log("📦 Полученные данные:", data);
+
+        if (!Array.isArray(data) || data.length === 0) {
+          document.getElementById('emotion-list').innerHTML = "<p style='text-align:center;'>Нет записей для этого пользователя.</p>";
+        } else {
+          allEntries = data;
+          renderFilters();
+          renderEmotions(allEntries);
+        }
+
         document.getElementById('loader').style.display = 'none';
         document.querySelector('main').style.display = 'block';
       } catch (err) {
+        console.error("❌ Ошибка при получении данных:", err);
         document.getElementById('emotion-list').innerHTML = "<p style='text-align:center;'>Ошибка загрузки данных.</p>";
         document.getElementById('loader').style.display = 'none';
         document.querySelector('main').style.display = 'block';
@@ -231,41 +229,42 @@
     }
 
     function renderFilters() {
-  const container = document.getElementById('emotion-filters');
-  container.innerHTML = "";
+      const container = document.getElementById('emotion-filters');
+      container.innerHTML = "";
 
-  const rows = [
-    [ { id: "all", text: "Все эмоции", className: "all-emotions" } ],
-    EMOTIONS.slice(0, 4),
-    EMOTIONS.slice(4, 6),
-    EMOTIONS.slice(6, 8)
-  ];
+      const counts = {};
+      EMOTIONS.forEach(em => {
+        counts[em.id] = allEntries.filter(e =>
+          normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+        ).length;
+      });
 
-  rows.forEach(row => {
-    const rowDiv = document.createElement('div');
-    rowDiv.className = "row";
+      const allActive = allEntries.length > 0;
+      const btnAll = document.createElement('button');
+      btnAll.textContent = "Все эмоции";
+      btnAll.className = allActive ? "active all-emotions" : "inactive all-emotions";
+      if (allActive) btnAll.onclick = () => renderEmotions(allEntries);
+      container.appendChild(btnAll);
 
-    row.forEach(em => {
-      const btn = document.createElement('button');
-      btn.textContent = em.text || em.id;
-      btn.className = em.className || "";
-      btn.onclick = () => {
-        if (em.id === "all") {
-          renderEmotions(allEntries);
+      EMOTIONS.forEach(em => {
+        const btn = document.createElement('button');
+        btn.textContent = em.text;
+
+        if (counts[em.id] > 0) {
+          btn.className = "active";
+          btn.onclick = () => {
+            const filtered = allEntries.filter(e =>
+              normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+            );
+            renderEmotions(filtered);
+          };
         } else {
-          const filtered = allEntries.filter(e =>
-            normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
-          );
-          renderEmotions(filtered);
+          btn.className = "inactive";
         }
-      };
-      rowDiv.appendChild(btn);
-    });
 
-    container.appendChild(rowDiv);
-  });
-}
-
+        container.appendChild(btn);
+      });
+    }
 
     function renderEmotions(entries) {
       const container = document.getElementById('emotion-list');

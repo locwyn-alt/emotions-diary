@@ -61,10 +61,10 @@ h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
   color: #fff;
 }
 
-/* Неактивные кнопки */
-body:not(.dark) #emotion-filters button.inactive { background-color:#f0f0f0; color:#555; }
-body.dark #emotion-filters button.inactive { background-color:#3a3a3a; color:#aaa; }
+/* Неактивные кнопки — оставляем как есть, без изменения цветов */
+#emotion-filters button.inactive {}
 
+/* Кнопка "Все эмоции" */
 #emotion-filters button.all-emotions { grid-column: span 4; }
 
 /* 📱 Мобильные кнопки */
@@ -169,7 +169,7 @@ function renderFilters(){
   // Кнопка "Все эмоции"
   const btnAll=document.createElement('button');
   btnAll.textContent="Все эмоции"; 
-  btnAll.className=(currentFilter===null) ? "active all-emotions" : "inactive all-emotions";
+  btnAll.classList.toggle("active", currentFilter===null);
   btnAll.onclick=()=>{currentFilter=null; renderFilters(); renderEmotions(allEntries);};
   c.appendChild(btnAll);
 
@@ -177,15 +177,11 @@ function renderFilters(){
   EMOTIONS.forEach(em=>{
     const btn=document.createElement('button'); 
     btn.textContent=em.text;
-    if(counts[em.id]>0){
-      btn.className=(currentFilter===em.id) ? "active" : "inactive"; 
-      btn.onclick=()=>{
-        currentFilter=em.id; 
-        renderFilters(); 
-        renderEmotions(allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id));
-      }
-    } else {
-      btn.className="inactive";
+    btn.classList.toggle("active", currentFilter===em.id); 
+    btn.onclick=()=>{
+      currentFilter=em.id; 
+      renderFilters(); 
+      renderEmotions(allEntries.filter(e=>normalizeEmotionId(e.emotion_type,e.emotion_id)===em.id));
     }
     c.appendChild(btn);
   });

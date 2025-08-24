@@ -63,55 +63,61 @@
     }
 
     /* 🖥️ Десктоп: сетка 4 ряда */
-    #emotion-filters {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      grid-template-rows: auto auto auto auto;
-      gap: 12px;
-      margin: 20px auto;
-      max-width: 800px;
-    }
+ #emotion-filters {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: auto;
+  gap: 12px;
+  margin: 20px auto;
+  max-width: 800px;
+}
 
-    #emotion-filters button {
-      padding: 10px 16px;
-      font-size: 15px;
-      border-radius: 20px;
-      background-color: var(--button-bg);
-      color: var(--button-text);
-      border: none;
-      cursor: pointer;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      width: 100%;
-    }
+#emotion-filters .row {
+  display: contents;
+}
 
-    #emotion-filters button.all-emotions {
-      grid-column: span 4;
-      background-color: #2196f3;
-      color: white;
-      text-align: center;
-    }
+#emotion-filters button {
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 20px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  width: 100%;
+}
 
-    /* 📱 Мобильная версия: облако */
-    @media (max-width: 600px) {
-      #emotion-filters {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: center;
-        gap: 8px;
-      }
+#emotion-filters button.all-emotions {
+  grid-column: span 4;
+  background-color: #2196f3;
+  color: white;
+  text-align: center;
+}
 
-      #emotion-filters button {
-        flex: 0 0 auto;
-        width: auto;
-        max-width: 100%;
-      }
+/* 📱 Мобильная версия */
+@media (max-width: 600px) {
+  #emotion-filters {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+  }
 
-      #emotion-filters button.all-emotions {
-        flex-basis: 100%;
-      }
-    }
+  #emotion-filters .row {
+    display: contents;
+  }
+
+  #emotion-filters button {
+    flex: 0 0 auto;
+    width: auto;
+    max-width: 100%;
+  }
+
+  #emotion-filters button.all-emotions {
+    flex-basis: 100%;
+  }
+}
 
     #emotion-list .entry {
       background-color: var(--card-bg);
@@ -227,20 +233,67 @@
     }
 
     function renderFilters() {
-      const container = document.getElementById('emotion-filters');
-      container.innerHTML = "";
+  const container = document.getElementById('emotion-filters');
+  container.innerHTML = "";
 
-      const btnAll = document.createElement('button');
-      btnAll.textContent = "Все эмоции";
-      btnAll.className = "all-emotions";
-      btnAll.onclick = () => renderEmotions(allEntries);
-      container.appendChild(btnAll);
+  // Ряд 1 — Все эмоции
+  const row1 = document.createElement('div');
+  row1.className = "row";
+  const btnAll = document.createElement('button');
+  btnAll.textContent = "Все эмоции";
+  btnAll.className = "all-emotions";
+  btnAll.onclick = () => renderEmotions(allEntries);
+  row1.appendChild(btnAll);
+  container.appendChild(row1);
 
-      const rows = [
-        EMOTIONS.slice(0, 4),
-        EMOTIONS.slice(4, 6),
-        EMOTIONS.slice(6, 8)
-      ];
+  // Ряд 2 — 4 кнопки
+  const row2 = document.createElement('div');
+  row2.className = "row";
+  EMOTIONS.slice(0, 4).forEach(em => {
+    const btn = document.createElement('button');
+    btn.textContent = em.text;
+    btn.onclick = () => {
+      const filtered = allEntries.filter(e =>
+        normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+      );
+      renderEmotions(filtered);
+    };
+    row2.appendChild(btn);
+  });
+  container.appendChild(row2);
+
+  // Ряд 3 — 2 кнопки
+  const row3 = document.createElement('div');
+  row3.className = "row";
+  EMOTIONS.slice(4, 6).forEach(em => {
+    const btn = document.createElement('button');
+    btn.textContent = em.text;
+    btn.onclick = () => {
+      const filtered = allEntries.filter(e =>
+        normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+      );
+      renderEmotions(filtered);
+    };
+    row3.appendChild(btn);
+  });
+  container.appendChild(row3);
+
+  // Ряд 4 — 2 кнопки
+  const row4 = document.createElement('div');
+  row4.className = "row";
+  EMOTIONS.slice(6, 8).forEach(em => {
+    const btn = document.createElement('button');
+    btn.textContent = em.text;
+    btn.onclick = () => {
+      const filtered = allEntries.filter(e =>
+        normalizeEmotionId(e.emotion_type, e.emotion_id) === em.id
+      );
+      renderEmotions(filtered);
+    };
+    row4.appendChild(btn);
+  });
+  container.appendChild(row4);
+}
 
       rows.forEach(row => {
         row.forEach(em => {

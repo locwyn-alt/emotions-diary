@@ -63,35 +63,33 @@
     }
 
     /* 🎯 Три ряда кнопок */
-    #emotion-filters {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      max-width: 800px;
-      margin: 20px auto;
-    }
+#emotion-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin: 20px auto;
+}
 
     #emotion-filters button {
-      padding: 10px 16px;
-      font-size: 15px;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      border: none;
-      border-radius: 20px;
-      background-color: var(--button-bg);
-      color: var(--button-text);
-      cursor: pointer;
-      transition: background-color 0.3s ease;
-      width: 100%;
-    }
+  flex: 0 0 auto;
+  padding: 10px 16px;
+  font-size: 15px;
+  border-radius: 20px;
+  background-color: var(--button-bg);
+  color: var(--button-text);
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  max-width: 100%;
+}
 
-    #emotion-filters button.all-emotions {
-      grid-column: span 4;
-      background-color: #2196f3;
-      color: white;
-      text-align: center;
-    }
+#emotion-filters button.all-emotions {
+  background-color: #2196f3;
+  color: white;
+  flex-basis: 100%;
+  text-align: center;
+}
 
     #emotion-filters button:hover {
       background-color: #8e24aa;

@@ -35,6 +35,11 @@ body {
 
 h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
 
+.label {
+  color: var(--accent-color);
+  font-weight: 600;
+}
+  
 #theme-toggle {
   display:block; margin:0 auto 20px auto; padding:8px 16px;
   border-radius:20px; background-color:var(--button-bg); color:var(--button-text);
@@ -88,7 +93,13 @@ body.dark #emotion-filters button.inactive {
 }
 
 #emotion-list .entry h4 { margin:0 0 6px 0; color:var(--accent-color); }
-#emotion-list .entry p { margin:2px 0; color:var(--text-color); }
+#emotion-list .entry p {
+  margin: 2px 0;
+  color: var(--text-color);
+  word-wrap: break-word;     /* старый синтаксис */
+  overflow-wrap: anywhere;   /* современный синтаксис, лучше чем break-word */
+  white-space: pre-wrap;     /* сохраняет переносы и переносит длинные строки */
+}
 
 #loader {
   position: fixed; top:0; left:0; width:100%; height:100%;
@@ -195,7 +206,13 @@ function renderEmotions(entries){
   entries.sort((a,b)=>new Date(b.date)-new Date(a.date));
   entries.forEach(e=>{
     const d=document.createElement('div'); d.className="entry";
-    d.innerHTML=`<h4>${e.emotion_type}</h4><p><b>Интенсивность:</b> ${e.emotion_intens}/10</p><p><b>Ситуация:</b> ${e.emotion_context}</p><p><b>Реакция:</b> ${e.emotion_reflex}</p><p><b>Мысли:</b> ${e.emotion_think}</p><p style="font-size:12px;color:#999;">${new Date(e.date).toLocaleString()}</p>`;
+    d.innerHTML=`
+    <h4>${e.emotion_type}</h4>
+    <p><span class="label">Интенсивность:</span> ${e.emotion_intens}/10</p>
+    <p><span class="label">Ситуация:</span> ${e.emotion_context}</p>
+    <p><span class="label">Реакция:</span> ${e.emotion_reflex}</p>
+    <p><span class="label">Мысли:</span> ${e.emotion_think}</p>
+    <p style="font-size:12px;color:#999;">${new Date(e.date).toLocaleString()}</p>`;
     c.appendChild(d);
   });
 }

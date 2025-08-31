@@ -41,7 +41,6 @@ h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
 .label {
   color: var(--label-color);
   font-weight: 600;
-  display: inline;          /* гарантируем, что span не будет вести себя как блок */
 }
 
 #theme-toggle {
@@ -121,7 +120,7 @@ body.dark #emotion-filters button.inactive {
   color: var(--text-color);
   word-break: break-all; 
   overflow-wrap: anywhere;
-  white-space: normal;      /* убираем pre-wrap, чтобы спаны не создавали лишние переносы */
+  white-space: pre-wrap;
 }
 
 #loader {

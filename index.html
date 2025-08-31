@@ -38,8 +38,14 @@ h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
 .label {
   color: var(--accent-color);
   font-weight: 600;
+  padding: 2px 6px;
+  border-radius: 6px;
+  background-color: rgba(0, 136, 204, 0.1);
 }
-  
+body.dark .label {
+  background-color: rgba(187, 134, 252, 0.1);
+}
+
 #theme-toggle {
   display:block; margin:0 auto 20px auto; padding:8px 16px;
   border-radius:20px; background-color:var(--button-bg); color:var(--button-text);
@@ -68,11 +74,11 @@ h2 { text-align:center; margin-bottom:16px; color:var(--text-color); }
 
 /* Неактивные кнопки — как в Телеграме */
 body:not(.dark) #emotion-filters button.inactive {
-  background-color: #e0f2ff; /* светло-голубой */
+  background-color: #e0f2ff; 
   color: #0088cc;
 }
 body.dark #emotion-filters button.inactive {
-  background-color: #3a2c4f; /* фиолетовый */
+  background-color: #3a2c4f; 
   color: #bb86fc;
 }
 
@@ -86,19 +92,38 @@ body.dark #emotion-filters button.inactive {
   #emotion-filters button.all-emotions { flex-basis:100%; text-align:center !important; }
 }
 
-#emotion-list .entry {
-  width:100%; max-width:820px; margin:0 auto 12px auto; padding:16px; box-sizing:border-box;
-  background-color: var(--card-bg); border-radius:12px; box-shadow:0 2px 6px rgba(0,0,0,0.05);
-  transition: background-color 0.4s ease, color 0.4s ease;
+/* Карточки эмоций */
+#emotion-list {
+  display: block; /* важно, чтобы карточки не были flex */
 }
 
-#emotion-list .entry h4 { margin:0 0 6px 0; color:var(--accent-color); }
+#emotion-list .entry {
+  width:100%; 
+  max-width:100%; /* убираем жесткий max-width для мобильных */
+  margin:0 auto 12px auto; 
+  padding:16px; 
+  box-sizing:border-box;
+  background-color: var(--card-bg); 
+  border-radius:12px; 
+  box-shadow:0 2px 6px rgba(0,0,0,0.05);
+  transition: background-color 0.4s ease, color 0.4s ease;
+  word-break: break-all; /* критично для Telegram Web */
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+#emotion-list .entry h4 { 
+  margin:0 0 6px 0; 
+  color:var(--accent-color); 
+  word-break: break-word;
+}
+
 #emotion-list .entry p {
-  margin: 2px 0;
+  margin:2px 0; 
   color: var(--text-color);
-  word-wrap: break-word;     /* старый синтаксис */
-  overflow-wrap: anywhere;   /* современный синтаксис, лучше чем break-word */
-  white-space: pre-wrap;     /* сохраняет переносы и переносит длинные строки */
+  word-break: break-all; 
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
 }
 
 #loader {

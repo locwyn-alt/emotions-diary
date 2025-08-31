@@ -121,7 +121,7 @@ body.dark #emotion-filters button.inactive {
 }
 
 #emotion-list .entry div, #emotion-list .entry p {
-  margin: 2px 0;
+  margin: 6px 0;
   color: var(--text-color);
   word-break: break-all; 
   overflow-wrap: anywhere;
@@ -250,10 +250,10 @@ function renderEmotions(entries){
     const d=document.createElement('div'); d.className="entry";
     d.innerHTML = `
       <h4>${e.emotion_type}</h4>
-      <div><span class="label">Интенсивность:</span><br> ${e.emotion_intens}/10</div>
-      <div><span class="label">Ситуация:</span><br> ${e.emotion_context}</div>
-      <div><span class="label">Реакция:</span><br> ${e.emotion_reflex}</div>
-     <div><span class="label">Мысли:</span><br> ${e.emotion_think}</div>
+      <div><span class="label">Интенсивность:</span> ${e.emotion_intens}/10</div>
+      <div><span class="label">Ситуация:</span> ${e.emotion_context}</div>
+      <div><span class="label">Реакция:</span> ${e.emotion_reflex}</div>
+     <div><span class="label">Мысли:</span> ${e.emotion_think}</div>
       <p style="font-size:12px;color:#999;"><br>${new Date(e.date).toLocaleString()}</p>
     `;
     c.appendChild(d);

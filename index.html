@@ -25,6 +25,17 @@ body.dark {
   --button-text: #fff;
 }
 
+/* Светлая и тёмная тема для меток */
+body:not(.dark) .label {
+  color: #0088cc;            /* как текст inactive кнопок */
+  background-color: #e0f2ff; /* как фон inactive кнопок */
+}
+
+body.dark .label {
+  color: #bb86fc;            /* текст inactive кнопок */
+  background-color: #3a2c4f; /* фон inactive кнопок */
+}
+  
 body {
   font-family: 'Segoe UI', sans-serif;
   background-color: var(--bg-color);

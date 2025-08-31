@@ -115,7 +115,7 @@ body.dark #emotion-filters button.inactive {
 }
 
 #emotion-list .entry h4 { 
-  margin:0 0 6px 0; 
+  margin:0 0 10px 0; 
   color:var(--accent-color); 
   word-break: break-word;
 }
@@ -249,7 +249,7 @@ function renderEmotions(entries){
   entries.forEach(e=>{
     const d=document.createElement('div'); d.className="entry";
     d.innerHTML = `
-      <h4>${e.emotion_type}</h4><br>
+      <h4>${e.emotion_type}</h4>
       <div><span class="label">Интенсивность:</span> ${e.emotion_intens}/10</div>
       <div><span class="label">Ситуация:</span> ${e.emotion_context}</div>
       <div><span class="label">Реакция:</span> ${e.emotion_reflex}</div>
